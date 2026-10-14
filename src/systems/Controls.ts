@@ -2,7 +2,7 @@ import Phaser from 'phaser';
 
 export type Action =
   | 'left' | 'right' | 'up' | 'down'
-  | 'jump' | 'attack' | 'skill1' | 'skill2' | 'heal'
+  | 'jump' | 'attack' | 'dash' | 'skill1' | 'skill2' | 'heal'
   | 'pause' | 'confirm' | 'back';
 
 const KEYS: Record<Action, string[]> = {
@@ -12,6 +12,7 @@ const KEYS: Record<Action, string[]> = {
   down: ['S', 'DOWN'],
   jump: ['SPACE', 'Z'],
   attack: ['J', 'X'],
+  dash: ['SHIFT'],
   skill1: ['K', 'C'],
   skill2: ['L', 'V'],
   heal: ['F', 'H'],
@@ -22,7 +23,7 @@ const KEYS: Record<Action, string[]> = {
 
 // Botões do gamepad no mapeamento padrão
 const PAD: Partial<Record<Action, number[]>> = {
-  jump: [0], attack: [2], skill1: [1], skill2: [5], heal: [3, 4],
+  jump: [0], attack: [2], dash: [5, 7], skill1: [1], skill2: [4], heal: [3],
   pause: [9], confirm: [0], back: [1],
   up: [12], down: [13], left: [14], right: [15],
 };
@@ -30,7 +31,8 @@ const PAD: Partial<Record<Action, number[]>> = {
 export const CONTROL_HELP: Array<[string, string]> = [
   ['Mover', 'A/D  ou  setas'],
   ['Pular', 'ESPAÇO  ou  Z'],
-  ['Atacar', 'J  ou  X  (+cima/baixo)'],
+  ['Atacar', 'J / X  ou  CLIQUE (mira)'],
+  ['Investida', 'SHIFT'],
   ['Habilidade 1', 'K  ou  C'],
   ['Habilidade 2', 'L  ou  V'],
   ['Curar (segurar)', 'F  ou  H'],
@@ -42,11 +44,18 @@ export class Controls {
   private keys: Record<string, Phaser.Input.Keyboard.Key> = {};
   private prev = new Map<Action, boolean>();
   private cur = new Map<Action, boolean>();
+  private clickQueued: { x: number; y: number } | null = null;
+  /** Clique esquerdo deste quadro (posição no mundo), para atacar mirando com o mouse */
+  click: { x: number; y: number } | null = null;
 
   constructor(private scene: Phaser.Scene) {
     const kb = scene.input.keyboard!;
     const names = new Set(Object.values(KEYS).flat());
     for (const n of names) this.keys[n] = kb.addKey(n, true, false);
+    scene.input.mouse?.disableContextMenu();
+    scene.input.on(Phaser.Input.Events.POINTER_DOWN, (p: Phaser.Input.Pointer) => {
+      if (p.leftButtonDown()) this.clickQueued = { x: p.worldX, y: p.worldY };
+    });
   }
 
   private raw(a: Action): boolean {
@@ -70,6 +79,8 @@ export class Controls {
       this.prev.set(a, this.cur.get(a) ?? false);
       this.cur.set(a, this.raw(a));
     }
+    this.click = this.clickQueued;
+    this.clickQueued = null;
   }
 
   down(a: Action) { return this.cur.get(a) ?? false; }
@@ -83,5 +94,7 @@ export class Controls {
       this.prev.set(a, v);
       this.cur.set(a, v);
     }
+    this.click = null;
+    this.clickQueued = null;
   }
 }

@@ -14,9 +14,10 @@ const BAND_H = 108;
 const BAND_TOP = (w: number) => GAME_H - 18 - (w + 1) * BAND_H; // mundo 0 embaixo
 
 function nodePos(world: number, index: number): [number, number] {
-  const xs = [70, 140, 210, 140];
+  // 5 arenas + chefe subindo em zigue-zague (evita os nomes dos mundos no canto)
+  const xs = [52, 102, 152, 202, 254, 206];
   const top = BAND_TOP(world);
-  return [xs[index] + (world % 2 ? 40 : 0), top + BAND_H - 24 - index * 22];
+  return [xs[index], top + BAND_H - 16 - index * 14];
 }
 
 export class MapScene extends Phaser.Scene {

@@ -4,6 +4,8 @@ import type { WorldDef, Platform, LevelDef } from './types';
 const L_A: Platform[] = [{ x: 96, y: 266, w: 112 }, { x: 432, y: 266, w: 112 }, { x: 264, y: 206, w: 112 }];
 const L_B: Platform[] = [{ x: 56, y: 262, w: 96 }, { x: 272, y: 270, w: 96 }, { x: 488, y: 262, w: 96 }, { x: 164, y: 204, w: 80 }, { x: 396, y: 204, w: 80 }];
 const L_C: Platform[] = [{ x: 200, y: 264, w: 240 }, { x: 40, y: 208, w: 96 }, { x: 504, y: 208, w: 96 }];
+const L_D: Platform[] = [{ x: 40, y: 268, w: 112 }, { x: 488, y: 268, w: 112 }, { x: 196, y: 214, w: 96 }, { x: 348, y: 214, w: 96 }];
+const L_E: Platform[] = [{ x: 120, y: 262, w: 400 }, { x: 264, y: 202, w: 112 }];
 const BOSS_1: Platform[] = [{ x: 72, y: 262, w: 112 }, { x: 456, y: 262, w: 112 }];
 const BOSS_2: Platform[] = [{ x: 88, y: 260, w: 96 }, { x: 272, y: 206, w: 96 }, { x: 456, y: 260, w: 96 }];
 const BOSS_3: Platform[] = [{ x: 64, y: 262, w: 96 }, { x: 480, y: 262, w: 96 }, { x: 272, y: 214, w: 96 }];
@@ -30,7 +32,15 @@ export const WORLDS: WorldDef[] = [
         amulet: 'crow_feather', platforms: L_C,
         waves: [['archer', 'archer', 'skeleton'], ['crow', 'crow', 'crow', 'zombie'], ['zombie', 'zombie', 'archer', 'skeleton', 'crow', 'crow']],
       }),
-      lvl(1, 4, 'Trono de Ossos', { boss: 'boneking', bossWeapon: 'scythe', platforms: BOSS_1, fragments: 80 }),
+      lvl(1, 4, 'Cripta dos Sussurros', {
+        amulet: 'gravedigger_relic', platforms: L_D,
+        waves: [['archer', 'archer', 'skeleton', 'skeleton'], ['zombie', 'zombie', 'crow', 'crow'], ['skeleton', 'skeleton', 'skeleton', 'archer', 'archer', 'crow']],
+      }),
+      lvl(1, 5, 'Ossada do Rei', {
+        amulet: 'spectral_blade', platforms: L_E,
+        waves: [['zombie', 'zombie', 'zombie', 'crow'], ['archer', 'archer', 'archer', 'skeleton', 'skeleton'], ['zombie', 'zombie', 'skeleton', 'skeleton', 'crow', 'crow', 'archer']],
+      }),
+      lvl(1, 6, 'Trono de Ossos', { boss: 'boneking', bossWeapon: 'scythe', platforms: BOSS_1, fragments: 80 }),
     ],
   },
   {
@@ -50,7 +60,15 @@ export const WORLDS: WorldDef[] = [
         amulet: 'messenger_sandals', platforms: L_C,
         waves: [['knight', 'knight', 'knight'], ['sentinel', 'ofanim', 'ofanim', 'sentinel'], ['knight', 'knight', 'ofanim', 'ofanim', 'sentinel', 'sentinel']],
       }),
-      lvl(2, 4, 'Portão do Carcereiro', { boss: 'seraph', bossWeapon: 'gauntlets', platforms: BOSS_2, fragments: 120 }),
+      lvl(2, 4, 'Claustro das Asas', {
+        amulet: 'cherub_plume', platforms: L_D,
+        waves: [['knight', 'knight', 'ofanim', 'ofanim'], ['sentinel', 'sentinel', 'knight'], ['ofanim', 'ofanim', 'ofanim', 'knight', 'knight', 'sentinel']],
+      }),
+      lvl(2, 5, 'Altar do Veredito', {
+        amulet: 'seraph_tear', platforms: L_E,
+        waves: [['sentinel', 'sentinel', 'sentinel', 'ofanim'], ['knight', 'knight', 'knight', 'ofanim', 'ofanim'], ['sentinel', 'sentinel', 'knight', 'knight', 'ofanim', 'ofanim', 'ofanim']],
+      }),
+      lvl(2, 6, 'Portão do Carcereiro', { boss: 'seraph', bossWeapon: 'gauntlets', platforms: BOSS_2, fragments: 120 }),
     ],
   },
   {
@@ -70,7 +88,15 @@ export const WORLDS: WorldDef[] = [
         amulet: 'martyr_blade', platforms: L_C,
         waves: [['fallen', 'fallen', 'fallen'], ['profane', 'profane', 'voideye', 'archer', 'archer'], ['fallen', 'fallen', 'voideye', 'voideye', 'profane', 'sentinel']],
       }),
-      lvl(3, 4, 'O Trono Usurpado', { boss: 'falseangel', platforms: BOSS_3, fragments: 0 }),
+      lvl(3, 4, 'Coro Profano', {
+        amulet: 'void_eye', platforms: L_D,
+        waves: [['fallen', 'fallen', 'voideye', 'voideye'], ['profane', 'profane', 'profane', 'sentinel'], ['fallen', 'fallen', 'fallen', 'voideye', 'voideye', 'profane']],
+      }),
+      lvl(3, 5, 'Véu do Usurpador', {
+        amulet: 'final_judgment', platforms: L_E,
+        waves: [['profane', 'profane', 'fallen', 'fallen', 'voideye'], ['voideye', 'voideye', 'voideye', 'fallen', 'fallen', 'archer', 'archer'], ['fallen', 'fallen', 'fallen', 'profane', 'profane', 'voideye', 'voideye', 'sentinel']],
+      }),
+      lvl(3, 6, 'O Trono Usurpado', { boss: 'falseangel', platforms: BOSS_3, fragments: 0 }),
     ],
   },
 ];

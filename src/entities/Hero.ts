@@ -16,6 +16,16 @@ const SCREAM_RADIUS = 130;
 
 type AttackDir = 'fwd' | 'up' | 'down';
 
+/** Projétil do herói (Lâmina Espectral e lanças do Juízo) */
+interface Bolt {
+  sprite: Phaser.GameObjects.Image;
+  vx: number;
+  vy: number;
+  life: number;
+  damage: number;
+  hit: Set<object>;
+}
+
 export class Hero extends Phaser.Physics.Arcade.Sprite {
   declare body: Phaser.Physics.Arcade.Body;
   stats: Stats;
@@ -55,6 +65,9 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
   knockback = 0;
   regenTimer = 0;
   kills = 0;
+  cheatUsed = false;
+  abilityCd = 0;
+  bolts: Bolt[] = [];
 
   shieldRing: Phaser.GameObjects.Arc;
   weaponFx: Phaser.GameObjects.Sprite | null = null;
@@ -86,11 +99,12 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     if (this.dead) { this.shieldRing.setVisible(false); return; }
 
     for (const k of ['invuln', 'attackCd', 'attackActive', 'attackPose', 'coyote', 'jumpBuffer', 'dropTimer',
-      'dashCd', 'screamCd', 'screamPose', 'knockback', 'comboTimer'] as const) {
+      'dashCd', 'screamCd', 'screamPose', 'knockback', 'comboTimer', 'abilityCd'] as const) {
       this[k] = Math.max(0, this[k] - dt);
     }
 
     this.updateRegen(dt);
+    this.updateBolts(dt);
 
     const grounded = this.grounded;
     if (grounded) {
@@ -169,14 +183,25 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     if (c.released('jump') && this.body.velocity.y < 0) this.setVelocityY(this.body.velocity.y * 0.45);
 
     // --- Ataque ---
-    if (c.pressed('attack') && this.attackCd <= 0 && !this.healing) {
-      const dir: AttackDir = c.down('up') ? 'up' : c.down('down') && !grounded ? 'down' : 'fwd';
+    const click = c.click;
+    if ((c.pressed('attack') || click) && this.attackCd <= 0 && !this.healing) {
+      let dir: AttackDir;
+      if (click) {
+        // mira com o mouse: ataca na direção do cursor
+        const dx = click.x - this.x, dy = click.y - this.body.center.y;
+        if (dy < -Math.abs(dx) * 1.1) dir = 'up';
+        else if (dy > Math.abs(dx) * 1.1 && !grounded) dir = 'down';
+        else { dir = 'fwd'; this.facing = dx >= 0 ? 1 : -1; }
+      } else {
+        dir = c.down('up') ? 'up' : c.down('down') && !grounded ? 'down' : 'fwd';
+      }
       this.startAttack(dir);
     }
     this.checkAttackHits();
     this.updateWeaponFx();
 
     // --- Habilidades ---
+    if (c.pressed('dash') && this.stats.dash) this.dash();
     if (c.pressed('skill1')) this.useAbility(this.stats.abilities[0]);
     if (c.pressed('skill2')) this.useAbility(this.stats.abilities[1]);
 
@@ -241,16 +266,17 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     if (!fx || !fx.active) return;
     const cy = this.body.center.y - 2;
     if (this.attackDir === 'fwd') {
-      fx.setPosition(this.x + this.facing * 4, cy).setAngle(0).setScale(this.facing, 1);
+      fx.setPosition(this.x + this.facing * 4, cy).setAngle(0).setScale(this.facing * this.stats.reach, 1);
     } else if (this.attackDir === 'up') {
-      fx.setPosition(this.x, cy - 6).setScale(1, this.facing).setAngle(-90);
+      fx.setPosition(this.x, cy - 6).setScale(this.stats.reach, this.facing).setAngle(-90);
     } else {
-      fx.setPosition(this.x, cy + 6).setScale(1, this.facing).setAngle(90);
+      fx.setPosition(this.x, cy + 6).setScale(this.stats.reach, this.facing).setAngle(90);
     }
   }
 
   private hitbox(): Phaser.Geom.Rectangle {
-    const w = this.stats.weapon;
+    const base = this.stats.weapon;
+    const w = { ...base, reach: base.reach * this.stats.reach };
     const cx = this.x, cy = this.body.center.y;
     if (this.attackDir === 'up') return new Phaser.Geom.Rectangle(cx - w.height / 2, cy - 10 - w.reach, w.height, w.reach + 4);
     if (this.attackDir === 'down') return new Phaser.Geom.Rectangle(cx - w.height / 2, cy + 4, w.height, w.reach);
@@ -285,7 +311,9 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
       if (this.hitSet.has(e) || e.dead || !e.hittable) continue;
       if (!Phaser.Geom.Rectangle.Overlaps(box, e.hurtRect())) continue;
       this.hitSet.add(e);
-      const { dmg, crit } = this.rollDamage(this.stats.damage, e);
+      const base = this.attackDir === 'down' ? this.stats.damage * (1 + this.stats.pogoBonus) : this.stats.damage;
+      const { dmg, crit } = this.rollDamage(base, e);
+      if (crit && this.stats.critEnergy > 0) this.gainEnergy(this.stats.critEnergy);
       const dirX = this.attackDir === 'fwd' ? (e.x >= this.x ? 1 : -1) : Math.sign(e.x - this.x) || this.facing;
       const res = e.takeHit({ damage: dmg, dirX, knockback: w.knockback, crit, source: 'melee', attackDir: this.attackDir, fromX: this.x });
       if (res !== 'immune') {
@@ -352,10 +380,86 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     if (!ab || this.healing) return;
     if (ab === 'dash') this.dash();
     else if (ab === 'scream') this.scream();
+    else if (ab === 'spectral') this.spectral();
+    else if (ab === 'judgment') this.judgment();
+  }
+
+  private spend(cost: number) {
+    if (this.energy < cost - 1e-6) {
+      Sfx.play('error');
+      this.arena.floatText(this.x, this.y - 30, 'SEM ENERGIA', '#8a7cc8');
+      return false;
+    }
+    this.energy -= cost;
+    return true;
+  }
+
+  /** Lâmina Espectral: corte de luz que atravessa inimigos */
+  private spectral() {
+    if (this.abilityCd > 0 || !this.spend(this.stats.spellCost * 0.5)) return;
+    this.abilityCd = 0.35;
+    this.attackPose = 0.15;
+    this.attackDir = 'fwd';
+    const click = this.arena.controls.click;
+    if (click) this.facing = click.x >= this.x ? 1 : -1;
+    const dmg = Math.round(this.stats.damage * this.stats.damageMult * 1.5);
+    const s = this.arena.add.image(this.x + this.facing * 12, this.body.center.y - 2, 'spectral').setDepth(DEPTH.hero + 2).setFlipX(this.facing < 0);
+    this.bolts.push({ sprite: s, vx: this.facing * 380, vy: 0, life: 0.9, damage: dmg, hit: new Set() });
+    Sfx.play('magic');
+  }
+
+  /** Juízo Final: 8 lanças de luz em círculo */
+  private judgment() {
+    if (this.abilityCd > 0 || !this.spend(this.stats.spellCost * 2)) return;
+    this.abilityCd = 1;
+    this.screamPose = 0.4;
+    this.invuln = Math.max(this.invuln, 0.4);
+    const cx = this.x, cy = this.body.center.y;
+    const dmg = Math.round(22 * this.stats.damageMult + this.stats.damage);
+    for (let i = 0; i < 8; i++) {
+      const a = (i / 8) * Math.PI * 2;
+      const s = this.arena.add.image(cx, cy, 'lance').setDepth(DEPTH.hero + 2).setRotation(a - Math.PI / 2);
+      this.bolts.push({ sprite: s, vx: Math.cos(a) * 320, vy: Math.sin(a) * 320, life: 0.8, damage: dmg, hit: new Set() });
+    }
+    this.arena.ring(cx, cy, 70, 0xffd75e, 300);
+    this.arena.flash(0xffd75e, 0.25);
+    this.arena.shake(0.01, 200);
+    Sfx.play('boom');
+    Sfx.play('sparkle');
+  }
+
+  private updateBolts(dt: number) {
+    for (const b of this.bolts) {
+      b.life -= dt;
+      b.sprite.x += b.vx * dt;
+      b.sprite.y += b.vy * dt;
+      const r = b.sprite.getBounds();
+      for (const e of this.arena.allTargets()) {
+        if (e.dead || !e.hittable || b.hit.has(e)) continue;
+        if (!Phaser.Geom.Rectangle.Overlaps(r, e.hurtRect())) continue;
+        b.hit.add(e);
+        const { dmg, crit } = this.rollDamage(b.damage / this.stats.damageMult, e);
+        e.takeHit({ damage: dmg, dirX: Math.sign(b.vx) || 1, knockback: 120, crit, source: 'shock', attackDir: 'fwd', fromX: b.sprite.x - b.vx });
+        this.arena.fx('spark', e.x, e.cy, { tint: 0x8ef0ff });
+        Sfx.play('hit');
+      }
+      if (b.life <= 0) b.sprite.destroy();
+      else if (b.life < 0.15) b.sprite.setAlpha(b.life / 0.15);
+    }
+    this.bolts = this.bolts.filter((b) => b.life > 0);
+  }
+
+  /** Cura direta (corações, ondas) */
+  healBy(n: number, color = '#ff7a8a') {
+    if (this.dead || this.hp >= this.stats.maxHp) return false;
+    this.hp = Math.min(this.stats.maxHp, this.hp + n);
+    Sfx.play('heal');
+    this.arena.floatText(this.x, this.y - 26, `+${n}`, color);
+    return true;
   }
 
   private dash() {
-    if (this.dashCd > 0 || (!this.grounded && this.airDashed)) return;
+    if (this.dashCd > 0 || this.healing || (!this.grounded && this.airDashed)) return;
     let dir = this.facing;
     const c = this.arena.controls;
     if (c.down('left')) dir = -1;
@@ -426,7 +530,16 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     this.hp -= damage;
     this.healing = false;
     this.healProgress = 0;
-    this.invuln = 1.1;
+    this.invuln = 1.1 * this.stats.invulnMult;
+    if (this.hp <= 0 && this.stats.cheatDeath && !this.cheatUsed) {
+      // Lágrima do Serafim: sobrevive ao golpe fatal
+      this.cheatUsed = true;
+      this.hp = 1;
+      this.invuln = 2;
+      Sfx.play('sparkle');
+      this.arena.floatText(this.x, this.y - 34, 'LÁGRIMA DO SERAFIM!', '#8ef0ff');
+      this.arena.flash(0x8ef0ff, 0.5);
+    }
     this.knockback = 0.2;
     this.dashTime = 0;
     this.body.setAllowGravity(true);
@@ -463,6 +576,7 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
 
   onKill() {
     this.kills++;
+    if (this.stats.killEnergy > 0) this.gainEnergy(this.stats.killEnergy);
     if (this.stats.killHeal > 0 && this.kills % this.stats.killHeal === 0 && this.hp < this.stats.maxHp) {
       this.hp++;
       Sfx.play('heal');
@@ -508,6 +622,8 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
   }
 
   destroy(fromScene?: boolean) {
+    this.bolts.forEach((b) => b.sprite.destroy());
+    this.bolts = [];
     this.weaponFx?.destroy();
     this.shieldRing?.destroy();
     super.destroy(fromScene);

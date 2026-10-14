@@ -125,6 +125,10 @@ class BoneKing extends Boss {
     this.checkPhase(0.5, 2);
     const p2 = this.phase >= 2;
     this.setFlipX(this.hero.x < this.x);
+    // só sobrevoa enquanto há inimigos invocados; sozinho, desce ao alcance da espada
+    this.baseY = this.minions() > 0 ? 170 : this.arena.floorY - 34;
+    // fere por contato apenas durante o rasante
+    this.contactDamage = this.state === 'swoop' ? 1 : 0;
 
     switch (this.state) {
       case 'idle':
@@ -153,7 +157,7 @@ class BoneKing extends Boss {
           const offs = p2 ? [-120, -60, 0, 60, 120] : [-70, 0, 70];
           offs.forEach((o, i) => {
             const x = Phaser.Math.Clamp(this.hero.x + o - 15, 0, GAME_W - 30);
-            this.arena.spawnHazard({ kind: 'rect', x, y: this.arena.floorY - 38, w: 30, h: 38, warn: 0.7 + i * 0.08, active: 0.45, color: 0xe8e0c8, style: 'spikes', sound: 'boom' });
+            this.arena.spawnHazard({ kind: 'rect', x, y: this.arena.floorY - 38, w: 30, h: 38, warn: 1.2 + i * 0.08, active: 0.45, color: 0xe8e0c8, style: 'spikes', sound: 'boom' });
           });
           this.endAttack(p2 ? 1.0 : 1.4);
         }

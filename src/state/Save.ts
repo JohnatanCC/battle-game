@@ -16,6 +16,8 @@ export interface SaveData {
   finished: boolean;
   introSeen: boolean;
   tutorialDone: boolean;
+  /** 6 = mundos com 5 arenas + chefe */
+  layout?: number;
 }
 
 export interface Settings {
@@ -30,7 +32,7 @@ const SETTINGS_KEY = 'trono-caido-settings-v1';
 function fresh(): SaveData {
   return {
     v: 1, cleared: [], amulets: [], equipped: { red: [], blue: [], yellow: [] },
-    weapons: ['sword'], weapon: 'sword', cards: {}, fragments: 0, deaths: 0, finished: false, introSeen: false, tutorialDone: false,
+    weapons: ['sword'], weapon: 'sword', cards: {}, fragments: 0, deaths: 0, finished: false, introSeen: false, tutorialDone: false, layout: 6,
   };
 }
 
@@ -53,7 +55,14 @@ class SaveStore {
 
   load() {
     const s = read<SaveData>(SAVE_KEY);
-    if (s && s.v === 1) this.data = { ...fresh(), ...s };
+    if (s && s.v === 1) {
+      if (s.layout !== 6) {
+        // saves antigos: o chefe de cada mundo era o nível 4, agora é o 6
+        s.cleared = s.cleared.map((id) => (/^[123]-4$/.test(id) ? id.replace(/-4$/, '-6') : id));
+        s.layout = 6;
+      }
+      this.data = { ...fresh(), ...s };
+    }
     const st = read<Settings>(SETTINGS_KEY);
     if (st) this.settings = { ...this.settings, ...st };
   }
@@ -86,7 +95,7 @@ class SaveStore {
   /** Textura do herói conforme o poder recuperado (auréola se recompõe a cada chefe) */
   heroTexture() {
     if (this.data.finished) return 'hero_h3';
-    const n = ['1-4', '2-4'].filter((id) => this.isCleared(id)).length;
+    const n = ['1-6', '2-6'].filter((id) => this.isCleared(id)).length;
     return ['hero', 'hero_h1', 'hero_h2'][n];
   }
 

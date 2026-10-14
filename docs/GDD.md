@@ -35,7 +35,8 @@ A identidade visual do herói conta a história: auréola rachada, uma única as
 
 ## Estrutura
 
-3 mundos × 4 níveis. Os níveis 1–3 são arenas com 3 ondas de inimigos; o nível 4 é um chefe.
+3 mundos × 6 níveis. Os níveis 1–5 são arenas com 3 ondas de inimigos (cada uma dá um amuleto e uma carta);
+o nível 6 é o chefe. Mais fases antes do chefe = mais poder acumulado para enfrentá-lo.
 
 | Mundo | Tema | Inimigos | Chefe | Recompensa do chefe |
 |---|---|---|---|---|
@@ -46,6 +47,8 @@ A identidade visual do herói conta a história: auréola rachada, uma única as
 - **Progressão de campanha:** cada nível desbloqueia o seguinte. Ao morrer, você tenta de novo
   o mesmo nível sem perder a build, e preserva 50% dos fragmentos daquela tentativa.
 - **Rejogar** níveis concluídos rende fragmentos (sem novo amuleto nem carta).
+- **Corações de cura:** ao derrotar um inimigo há 5% de chance de cair um coração (+20% se você
+  estiver abaixo de metade da vida máxima). Ele cura 1 ao ser tocado e some após 10 s, piscando nos últimos 3.
 
 ## Personagem
 
@@ -53,11 +56,12 @@ A identidade visual do herói conta a história: auréola rachada, uma única as
 |---|---|
 | Vida | 5 corações |
 | Energia | 3 cargas (cada golpe acerta +0,25 carga) |
-| Dano (espada) | 10 |
+| Dano (espada) | 9 |
 | Cura | Segurar F: canaliza 1,1 s, custa 1 carga, cura 1 |
 
 Movimento: pulo com altura variável, *coyote time*, *jump buffer*, descer de plataforma (baixo + pulo).
 Ataque em 3 direções (frente, cima e baixo no ar). O golpe para baixo faz **pogo** (quica no inimigo).
+Com o **mouse**, o clique ataca na direção do cursor. A **investida** fica no **SHIFT** (recarga 0,8 s).
 
 ## Build: 4 slots
 
@@ -65,7 +69,7 @@ Ataque em 3 direções (frente, cima e baixo no ar). O golpe para baixo faz **po
 |---|---|
 | Arma | Espada (base), Lança (carta), Foice (chefe 1), Manoplas (chefe 2) |
 | Amuleto vermelho | Vida e resistência |
-| Amuleto azul | Habilidades especiais (teclas K / L) |
+| Amuleto azul | Habilidades especiais (investida no SHIFT; as demais nas teclas K / L) |
 | Amuleto amarelo | Utilidades |
 
 Os amuletos ficam numa **coleção**. Você equipa na tela de Build antes de cada nível, então
@@ -76,19 +80,27 @@ as cartas de slot extra criam combinações reais (por exemplo, Investida + Grit
 | Nível | Amuleto | Efeito |
 |---|---|---|
 | 1-1 | Coração Ossificado (V) | +2 vida |
-| 1-2 | Pena da Asa Partida (A) | **Investida** invulnerável (sem custo, recarga 0,65 s) |
+| 1-2 | Pena da Asa Partida (A) | **Investida** invulnerável no SHIFT (sem custo, recarga 0,8 s) |
 | 1-3 | Pena do Corvo (Am) | +15% velocidade de ataque |
+| 1-4 | Relicário do Coveiro (V) | Recupera 1 de vida ao limpar cada onda |
+| 1-5 | Lâmina Espectral (A) | **Lâmina Espectral**: corte de luz à distância que atravessa inimigos (1,5× o dano); custa 1/2 carga |
 | 2-1 | Cálice Dourado (V) | +1 vida, cura 35% mais rápido |
 | 2-2 | Trombeta do Juízo (A) | **Grito Sônico**: empurra numa área grande, atordoa 2 s, destrói projéteis; custa 1 carga |
 | 2-3 | Sandálias do Mensageiro (Am) | +15% movimento, +4 dano |
+| 2-4 | Pluma do Querubim (Am) | Pulo duplo; golpe para baixo causa +50% de dano |
+| 2-5 | Lágrima do Serafim (V) | Uma vez por arena, sobrevive a um golpe fatal com 1 de vida |
 | 3-1 | Coração Usurpado (V) | Cura 50% mais rápido, regenera 1 vida a cada 30 s, −50% energia por golpe |
 | 3-2 | Égide Celeste (A) | Com vida cheia, bloqueia projéteis; cada bloqueio consome 10% da barra de energia |
 | 3-3 | Lâmina do Mártir (Am) | +10 dano, −1 vida, magias e cura custam +10% |
+| 3-4 | Olho do Abismo (Am) | +20% crítico; críticos recarregam 0,2 de energia |
+| 3-5 | Selo do Juízo Final (A) | **Juízo**: 8 lanças de luz em círculo, dano altíssimo; custa 2 cargas |
 
 ## Cartas
 
 Ao concluir um nível pela primeira vez, o jogo oferece **3 cartas e você escolhe 1**.
-O sorteio pondera a raridade: comum 60, rara 28, amaldiçoada 12.
+Cada oferta traz sempre **1 carta de ataque, 1 de defesa e 1 livre**, para nunca faltar opção de
+sobrevivência antes de um chefe. Dentro de cada categoria, o sorteio pondera a raridade
+(comum 60, rara 28, amaldiçoada 12).
 **Rerrolar** custa fragmentos (15, depois +10 a cada vez) e **pular** dá +10 fragmentos.
 
 | Carta | Raridade | Efeito |
@@ -107,6 +119,11 @@ O sorteio pondera a raridade: comum 60, rara 28, amaldiçoada 12.
 | Coroa de Espinhos | Comum | Ao ser atingido, causa 20 de dano ao redor |
 | Ganância Dourada | Comum | +50% fragmentos |
 | Sede Sagrada | Rara | A cada 12 abates, cura 1 |
+| Oração Ligeira (×2) | Comum | Cura 30% mais rápido |
+| Coração Peregrino (×2) | Comum | +10% de chance de cair coração de cura |
+| Pele de Mármore | Rara | Invulnerabilidade após dano dura 50% a mais |
+| Braço Longo | Comum | +20% de alcance da arma |
+| Colheita de Almas | Comum | Cada abate dá +1/3 de carga de energia |
 | Passos Etéreos | Comum | +10% movimento, investida recarrega 30% mais rápido |
 | Pacto Profano | Amaldiçoada | +35% dano, −1 vida |
 | Último Suspiro | Amaldiçoada | +80% dano com 1 de vida |
@@ -114,8 +131,10 @@ O sorteio pondera a raridade: comum 60, rara 28, amaldiçoada 12.
 
 ## Chefes
 
-**Rei Ossário (650 PV):** leque de ossos (quebráveis com a arma), espinhos que brotam do chão
-(com aviso), invocação de esqueletos e investida aérea seguida de pouso **vulnerável**.
+**Rei Ossário (650 PV):** só **voa enquanto há inimigos invocados**; sozinho, paira perto do chão,
+ao alcance da espada. Ataques: leque de ossos (quebráveis com a arma), espinhos que brotam do chão
+(aviso de 1,2 s), invocação de esqueletos e investida aérea (único momento em que fere por contato)
+seguida de pouso **vulnerável**.
 Fase 2 (50%): invoca corvos, adiciona chuva de ossos e fica mais rápido.
 
 **Serafim Guardião (900 PV):** desce e corta o chão (ondas para pular), chuva de lanças com

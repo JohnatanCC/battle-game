@@ -75,6 +75,10 @@ export function buildFxArt(scene: Phaser.Scene) {
     p.rect(10, 1, 3, 3, C.silver);
     p.rect(1, 1, 2, 3, C.redMid);
   }, null);
+  makeTex(scene, 'spectral', 22, 14, (p) => {
+    for (let t = 0; t < 4; t++) p.ring(2, 7, 16 - t, t === 0 ? C.white : t < 3 ? C.cyan : C.blue, -1.1, 1.1);
+    p.rect(14, 6, 4, 2, C.white);
+  }, null);
   makeSheet(scene, 'holyorb', 10, 10, frames(2, (p, i) => {
     p.circle(5, 5, 4, i ? C.gold : C.yellow);
     p.circle(5, 5, 2, C.white);

@@ -51,7 +51,7 @@ export class Tutorial {
         done: () => hero.grounded && hero.body.bottom >= floor - 2,
       },
       {
-        text: 'J ou X para atacar.\nDestrua o esqueleto!',
+        text: 'J / X ou CLIQUE para atacar (o clique mira).\nDestrua o esqueleto!',
         setup: () => spawn('skeleton'),
         done: clear,
       },

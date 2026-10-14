@@ -11,7 +11,7 @@ export const BASE = {
   healTime: 1.1,
   energyPerHit: 0.25,
   spellCost: 1,
-  dashCooldown: 0.65,
+  dashCooldown: 0.8,
 };
 
 export interface Stats {
@@ -37,7 +37,18 @@ export interface Stats {
   killHeal: number;
   lastStand: number;
   dashCooldown: number;
+  /** Investida (tecla SHIFT), vinda da Pena da Asa Partida */
+  dash: boolean;
+  /** Demais habilidades azuis, nas teclas K e L */
   abilities: AbilityId[];
+  killEnergy: number;
+  heartChance: number;
+  reach: number;
+  invulnMult: number;
+  waveHeal: number;
+  cheatDeath: boolean;
+  pogoBonus: number;
+  critEnergy: number;
 }
 
 function addMods(into: Mods, m: Partial<Mods>, times = 1) {
@@ -68,9 +79,11 @@ export function computeStats(): Stats {
   const m = totalMods();
   const weapon = WEAPONS[Save.data.weapon] ?? WEAPONS.sword;
   const abilities: AbilityId[] = [];
+  let dash = false;
   for (const id of Save.data.equipped.blue) {
     const ab = AMULET_BY_ID[id]?.ability;
-    if (ab && !abilities.includes(ab)) abilities.push(ab);
+    if (ab === 'dash') dash = true;
+    else if (ab && !abilities.includes(ab)) abilities.push(ab);
   }
   return {
     maxHp: Math.max(1, BASE.hp + m.maxHp),
@@ -95,6 +108,15 @@ export function computeStats(): Stats {
     killHeal: m.killHeal,
     lastStand: m.lastStand,
     dashCooldown: BASE.dashCooldown * Math.max(0.3, 1 + m.dashCooldown),
+    dash,
     abilities,
+    killEnergy: m.killEnergy,
+    heartChance: m.heartChance,
+    reach: 1 + m.reachMult,
+    invulnMult: 1 + m.invulnMult,
+    waveHeal: m.waveHeal,
+    cheatDeath: m.cheatDeath,
+    pogoBonus: m.pogoBonus,
+    critEnergy: m.critEnergy,
   };
 }

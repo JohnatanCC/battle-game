@@ -3,8 +3,8 @@ import type { WeaponDef, WeaponId } from './types';
 export const WEAPONS: Record<WeaponId, WeaponDef> = {
   sword: {
     id: 'sword', name: 'Espada Partida', icon: 0,
-    damage: 10, cooldown: 0.34, reach: 34, height: 26, knockback: 140, fx: 'slash',
-    desc: ['Equilibrada e rápida.', 'Dano 10.'],
+    damage: 9, cooldown: 0.34, reach: 34, height: 26, knockback: 140, fx: 'slash',
+    desc: ['Equilibrada e rápida.', 'Dano 9.'],
   },
   spear: {
     id: 'spear', name: 'Lança do Arauto', icon: 1,

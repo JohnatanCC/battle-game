@@ -5,13 +5,15 @@ import type { Hero } from '../entities/Hero';
 import type { Boss } from '../entities/bosses';
 import { BOSS_NAMES } from '../data/worlds';
 
-const ABILITY_NAME: Record<string, string> = { dash: 'INVESTIDA', scream: 'GRITO' };
+export const ABILITY_NAME: Record<string, string> = { dash: 'INVESTIDA', scream: 'GRITO', spectral: 'LÂMINA', judgment: 'JUÍZO' };
+const ABILITY_COST: Record<string, number> = { scream: 1, spectral: 0.5, judgment: 2 };
 
 export class Hud {
   hearts: Phaser.GameObjects.Image[] = [];
   orbsEmpty: Phaser.GameObjects.Image[] = [];
   orbsFull: Phaser.GameObjects.Image[] = [];
   abilityTexts: Phaser.GameObjects.Text[] = [];
+  slots: string[] = [];
   shardText: Phaser.GameObjects.Text;
   waveText: Phaser.GameObjects.Text;
   levelText: Phaser.GameObjects.Text;
@@ -30,8 +32,10 @@ export class Hud {
       this.orbsEmpty.push(scene.add.image(10 + i * 13, 26, 'orb', 0).setOrigin(0).setDepth(D));
       this.orbsFull.push(scene.add.image(10 + i * 13, 26, 'orb', 1).setOrigin(0).setDepth(D + 1));
     }
-    hero.stats.abilities.forEach((ab, i) => {
-      const key = i === 0 ? 'K' : 'L';
+    this.slots = [...(hero.stats.dash ? ['dash'] : []), ...hero.stats.abilities];
+    let k = 0;
+    this.slots.forEach((ab, i) => {
+      const key = ab === 'dash' ? 'SHIFT' : k++ === 0 ? 'K' : 'L';
       this.abilityTexts.push(txt(scene, 10, 42 + i * 11, `[${key}] ${ABILITY_NAME[ab]}`, { color: '#8ef0ff' }).setDepth(D));
     });
     scene.add.sprite(GAME_W - 70, 10, 'shard', 0).setOrigin(0).setDepth(D).play('shard-spin');
@@ -70,10 +74,12 @@ export class Hud {
       img.setCrop(0, 11 - px, 11, px);
       img.setAlpha(fill >= 1 ? 1 : 0.7);
     });
-    h.stats.abilities.forEach((ab, i) => {
+    this.slots.forEach((ab, i) => {
       const t = this.abilityTexts[i];
       if (!t) return;
-      const ready = ab === 'dash' ? h.dashCd <= 0 : h.screamCd <= 0 && h.energy >= h.stats.spellCost - 1e-6;
+      const ready = ab === 'dash'
+        ? h.dashCd <= 0
+        : (ab === 'scream' ? h.screamCd <= 0 : h.abilityCd <= 0) && h.energy >= h.stats.spellCost * (ABILITY_COST[ab] ?? 1) - 1e-6;
       t.setColor(ready ? '#8ef0ff' : '#4a4262');
     });
 

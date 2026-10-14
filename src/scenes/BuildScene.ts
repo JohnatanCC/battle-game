@@ -7,6 +7,7 @@ import { Save } from '../state/Save';
 import { Music } from '../audio/Music';
 import { computeStats } from '../state/Stats';
 import { Sfx } from '../audio/Sfx';
+import { ABILITY_NAME } from '../ui/Hud';
 import { AMULETS, AMULET_BY_ID, COLOR_FRAME, COLOR_NAME, COLOR_HEX } from '../data/amulets';
 import { WEAPONS } from '../data/weapons';
 import { CARD_BY_ID, RARITY_COLOR } from '../data/cards';
@@ -121,7 +122,7 @@ export class BuildScene extends Phaser.Scene {
       ['Movimento', pct(st.moveSpeed / 115 - 1)],
       ['Cura', `${st.healTime.toFixed(2)}s`],
       ['Energia/golpe', pct(st.energyPerHit / 0.25 - 1)],
-      ['Habilidades', st.abilities.length ? st.abilities.map((a) => (a === 'dash' ? 'Investida' : 'Grito')).join(', ') : '-'],
+      ['Habilidades', [...(st.dash ? ['dash'] : []), ...st.abilities].map((a) => ABILITY_NAME[a]).join(', ') || '-'],
     ];
     lines.forEach(([k, v], i) => {
       add(txt(this, 326, 214 + i * 12, k, { color: '#b8b0cc' }));

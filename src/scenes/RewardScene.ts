@@ -9,8 +9,8 @@ import { Sfx } from '../audio/Sfx';
 import { LEVEL_BY_ID } from '../data/worlds';
 import { AMULET_BY_ID, COLOR_FRAME, COLOR_NAME, COLOR_HEX } from '../data/amulets';
 import { WEAPONS } from '../data/weapons';
-import { CARDS, RARITY_WEIGHT, RARITY_NAME, RARITY_COLOR } from '../data/cards';
-import type { CardDef, LevelDef } from '../data/types';
+import { CARDS, RARITY_WEIGHT, RARITY_NAME, RARITY_COLOR, CAT_NAME } from '../data/cards';
+import type { CardDef, CardCat, LevelDef } from '../data/types';
 import { ENDING_PAGES } from './StoryScene';
 
 type Step = 'summary' | 'amulet' | 'weapon' | 'cards';
@@ -123,7 +123,7 @@ export class RewardScene extends Phaser.Scene {
     a(txt(this, GAME_W / 2, y, '"' + am.flavor + '"', { color: '#8a7cc8', origin: [0.5, 0], align: 'center', wrap: 400 }));
     const eq = Save.isEquipped(am.id);
     a(txt(this, GAME_W / 2, 280, eq ? 'Equipado automaticamente.' : 'Slot cheio: troque na tela de Build.', { color: eq ? '#8ef0ff' : '#e0a030', origin: [0.5, 0] }));
-    if (am.ability && eq) a(txt(this, GAME_W / 2, 294, 'Use a habilidade com [K]', { color: '#ffd75e', origin: [0.5, 0] }));
+    if (am.ability && eq) a(txt(this, GAME_W / 2, 294, am.ability === 'dash' ? 'Use a investida com [SHIFT]' : 'Use a habilidade com [K]', { color: '#ffd75e', origin: [0.5, 0] }));
     a(txt(this, GAME_W / 2, 316, '[ENTER] continuar', { color: '#5a4a9a', origin: [0.5, 0] }));
   }
 
@@ -144,14 +144,22 @@ export class RewardScene extends Phaser.Scene {
   private rollCards(): CardDef[] {
     const pool = CARDS.filter((c) => Save.cardCount(c.id) < c.max && !(c.weapon && Save.data.weapons.includes(c.weapon)));
     const out: CardDef[] = [];
-    while (out.length < 3 && pool.length > 0) {
-      const total = pool.reduce((s, c) => s + RARITY_WEIGHT[c.rarity], 0);
+    // sorteio ponderado pela raridade, opcionalmente restrito a uma categoria
+    const draw = (cat?: CardCat) => {
+      const cand = pool.filter((c) => !cat || c.cat === cat);
+      if (!cand.length) return;
+      const total = cand.reduce((s, c) => s + RARITY_WEIGHT[c.rarity], 0);
       let r = Math.random() * total;
-      let idx = 0;
-      for (; idx < pool.length; idx++) { r -= RARITY_WEIGHT[pool[idx].rarity]; if (r <= 0) break; }
-      out.push(pool.splice(Math.min(idx, pool.length - 1), 1)[0]);
-    }
-    return out;
+      let pick = cand[cand.length - 1];
+      for (const c of cand) { r -= RARITY_WEIGHT[c.rarity]; if (r <= 0) { pick = c; break; } }
+      out.push(pick);
+      pool.splice(pool.indexOf(pick), 1);
+    };
+    // sempre 1 de ataque, 1 de defesa e 1 livre
+    draw('atk');
+    draw('def');
+    while (out.length < 3 && pool.length > 0) draw();
+    return Phaser.Utils.Array.Shuffle(out);
   }
 
   private rerollCost() { return 15 + this.rerolls * 10; }
@@ -178,7 +186,7 @@ export class RewardScene extends Phaser.Scene {
       const col = RARITY_COLOR[c.rarity];
       a(panel(this, x, sel ? y - 6 : y, CARD_W, CARD_H, { border: sel ? 0xffd75e : col, inner: col, fill: c.rarity === 'cursed' ? 0x1e0f2a : 0x140c1c }));
       const yy = sel ? y - 6 : y;
-      a(txt(this, x + CARD_W / 2, yy + 12, RARITY_NAME[c.rarity], { origin: [0.5, 0], color: Phaser.Display.Color.IntegerToColor(col).rgba }));
+      a(txt(this, x + CARD_W / 2, yy + 12, `${CAT_NAME[c.cat]} - ${RARITY_NAME[c.rarity]}`, { origin: [0.5, 0], color: Phaser.Display.Color.IntegerToColor(col).rgba }));
       a(this.cardIcon(c, x + CARD_W / 2, yy + 50));
       a(txt(this, x + CARD_W / 2, yy + 78, c.name, { origin: [0.5, 0], color: sel ? '#ffd75e' : '#f4f0ff' }));
       c.desc.forEach((d, k) => a(txt(this, x + CARD_W / 2, yy + 100 + k * 12, d, { origin: [0.5, 0], color: '#b8b0cc' })));

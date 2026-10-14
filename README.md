@@ -3,7 +3,7 @@
 Jogo de batalhas em arena 16-bit. Você é um ser divino exilado que sobe das profundezas,
 mundo após mundo, para retomar o trono do Falso Anjo.
 
-- 3 mundos × 4 níveis (3 arenas + 1 chefe)
+- 3 mundos × 6 níveis (5 arenas + 1 chefe), com cinemática de abertura e prólogo jogável
 - Build com 4 slots: arma + amuletos vermelho, azul e amarelo
 - 1 carta a escolher entre 3 ao fim de cada nível
 - Pixel art gerada em código, efeitos sonoros sintetizados e trilha feita no Suno
@@ -22,9 +22,10 @@ npm run build      # gera dist/ (site estático)
 |---|---|---|
 | Mover | A/D ou setas | Analógico / D-pad |
 | Pular | Espaço ou Z | A |
-| Atacar (+cima/baixo) | J ou X | X |
-| Habilidade 1 / 2 | K ou C / L ou V | B / RB |
-| Curar (segurar) | F ou H | Y / LB |
+| Atacar (+cima/baixo) | J ou X, ou clique (mira com o mouse) | X |
+| Investida | SHIFT | RB / RT |
+| Habilidade 1 / 2 | K ou C / L ou V | B / LB |
+| Curar (segurar) | F ou H | Y |
 | Descer plataforma | Baixo + pular | |
 | Pausa | Esc ou P | Start |
 

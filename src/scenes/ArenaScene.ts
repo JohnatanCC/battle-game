@@ -54,6 +54,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
   pending = 0;
   runShards = 0;
   shardObjs: Phaser.Physics.Arcade.Group | null = null;
+  heartObjs: Phaser.Physics.Arcade.Group | null = null;
   amuletPickup: Phaser.GameObjects.Image | null = null;
   hitStopTime = 0;
   paused = false;
@@ -105,6 +106,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     this.enemies = this.add.group();
     this.shots = this.physics.add.group({ allowGravity: false });
     this.shardObjs = this.physics.add.group();
+    this.heartObjs = this.physics.add.group();
 
     // colisões
     this.physics.add.collider(this.hero, this.floor);
@@ -112,6 +114,9 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     this.physics.add.collider(this.enemies, this.floor, undefined, (e) => !(e as unknown as Enemy).flying, this);
     this.physics.add.collider(this.enemies, this.platforms, undefined, (e) => !(e as unknown as Enemy).flying && (e as unknown as Enemy).body.velocity.y >= 0, this);
     this.physics.add.collider(this.shardObjs, this.floor);
+    this.physics.add.collider(this.heartObjs, this.floor);
+    this.physics.add.collider(this.heartObjs, this.platforms);
+    this.physics.add.overlap(this.hero, this.heartObjs, (_h, s) => this.collectHeart(s as Phaser.Physics.Arcade.Sprite));
     this.physics.add.overlap(this.hero, this.enemies, (_h, e) => {
       const en = e as unknown as Enemy;
       if (en.hittable && en.contactDamage > 0 && en.stun <= 0) this.hero.hurt(en.contactDamage, en.x, 'contact');
@@ -228,6 +233,9 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
   onEnemyKilled(e: Enemy) {
     this.hero.onKill();
     if (e.isBoss) { this.onBossDefeated(e as Boss); return; }
+    // coração de cura: 5% (25% com menos da metade da vida) + bônus de cartas
+    const low = this.hero.hp < this.hero.stats.maxHp * 0.5;
+    if (Math.random() < 0.05 + (low ? 0.2 : 0) + this.stats.heartChance) this.dropHeart(e.x, e.cy);
     const n = e.summoned ? 1 : Math.ceil(e.shards * this.stats.fragmentMult);
     for (let i = 0; i < n; i++) this.dropShard(e.x, e.cy);
     this.enemies.remove(e);
@@ -302,6 +310,41 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     items.forEach((o) => o.setAlpha(0));
     this.tweens.add({ targets: items, alpha: 1, duration: 250 });
     this.tweens.add({ targets: items, alpha: 0, delay: 1900, duration: 400, onComplete: () => items.forEach((o) => o.destroy()) });
+  }
+
+  // ------------------------------------------------------------------ corações de cura
+  private dropHeart(x: number, y: number) {
+    const h = this.physics.add.sprite(x, y, 'heart', 0);
+    this.heartObjs!.add(h);
+    h.setDepth(DEPTH.fx - 1).setScale(1.2);
+    h.setVelocity(Phaser.Math.Between(-50, 50), -180);
+    h.setBounce(0.35).setDrag(80, 0).setCollideWorldBounds(true);
+    h.setData('life', 10);
+    const glow = this.add.image(x, y, 'glow').setTint(0xe83b3b).setAlpha(0.5).setDepth(DEPTH.fx - 2);
+    h.setData('glow', glow);
+    Sfx.play('pickup');
+  }
+
+  private updateHearts(dt: number) {
+    for (const h of this.heartObjs!.getChildren() as Phaser.Physics.Arcade.Sprite[]) {
+      const life = (h.getData('life') as number) - dt;
+      h.setData('life', life);
+      const glow = h.getData('glow') as Phaser.GameObjects.Image;
+      glow.setPosition(h.x, h.y);
+      // pisca nos últimos 3 segundos e some aos 10
+      const vis = life > 3 || Math.floor(life * 8) % 2 === 0;
+      h.setVisible(vis);
+      glow.setVisible(vis);
+      if (life <= 0) { glow.destroy(); h.destroy(); }
+    }
+  }
+
+  private collectHeart(h: Phaser.Physics.Arcade.Sprite) {
+    if (!h.active || this.hero.dead) return;
+    if (!this.hero.healBy(1)) return; // vida cheia: o coração continua no chão
+    this.burst(h.x, h.y, 'px', 0xe83b3b, 8);
+    (h.getData('glow') as Phaser.GameObjects.Image).destroy();
+    h.destroy();
   }
 
   // ------------------------------------------------------------------ fragmentos
@@ -635,6 +678,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     for (const h of this.hazards) h.update(dt);
     this.hazards = this.hazards.filter((h) => !h.dead);
     this.updateShards(dt);
+    this.updateHearts(dt);
     this.updateAmulet();
     this.hud.update(this.boss && !this.boss.dead ? this.boss : null);
 
@@ -650,6 +694,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
       case 'fight':
         if (this.pending <= 0 && this.aliveCount() === 0) {
           const waves = this.level.waves!;
+          if (this.stats.waveHeal > 0) this.hero.healBy(this.stats.waveHeal);
           if (this.waveIndex + 1 < waves.length) { this.phase = 'between'; this.phaseTime = 1.4; }
           else this.onCleared();
         }

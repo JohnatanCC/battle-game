@@ -1,6 +1,7 @@
 export type AmuletColor = 'red' | 'blue' | 'yellow';
 export type WeaponId = 'sword' | 'spear' | 'scythe' | 'gauntlets';
-export type AbilityId = 'dash' | 'scream';
+export type AbilityId = 'dash' | 'scream' | 'spectral' | 'judgment';
+export type CardCat = 'atk' | 'def' | 'util';
 export type Rarity = 'common' | 'rare' | 'cursed';
 
 /** Modificadores somáveis vindos de amuletos e cartas */
@@ -29,6 +30,14 @@ export interface Mods {
   killHeal: number;       // a cada N abates, cura 1
   lastStand: number;      // bônus de dano com 1 de vida
   dashCooldown: number;   // -0.3 = recarga 30% menor
+  killEnergy: number;     // energia ganha ao derrotar um inimigo
+  heartChance: number;    // chance extra de um inimigo soltar coração
+  reachMult: number;      // +0.2 = alcance da arma 20% maior
+  invulnMult: number;     // +0.5 = invulnerabilidade após dano 50% maior
+  waveHeal: number;       // vida recuperada ao limpar uma onda
+  cheatDeath: boolean;    // sobrevive a um golpe fatal por arena
+  pogoBonus: number;      // bônus de dano no golpe para baixo
+  critEnergy: number;     // energia ganha em acertos críticos
 }
 
 export const EMPTY_MODS: Mods = {
@@ -36,6 +45,7 @@ export const EMPTY_MODS: Mods = {
   healSpeed: 0, energyGain: 0, energyCost: 0, regenEvery: 0, projectileShield: false,
   bleed: false, weakness: false, dodge: 0, crit: 0, slotRed: 0, slotBlue: 0, slotYellow: 0,
   doubleJump: false, thorns: 0, fragmentGain: 0, killHeal: 0, lastStand: 0, dashCooldown: 0,
+  killEnergy: 0, heartChance: 0, reachMult: 0, invulnMult: 0, waveHeal: 0, cheatDeath: false, pogoBonus: 0, critEnergy: 0,
 };
 
 export interface AmuletDef {
@@ -53,6 +63,7 @@ export interface CardDef {
   id: string;
   name: string;
   rarity: Rarity;
+  cat: CardCat;
   desc: string[];
   max: number;            // quantas vezes pode ser escolhida
   mods?: Partial<Mods>;
@@ -87,7 +98,7 @@ export interface Platform { x: number; y: number; w: number; }
 export interface LevelDef {
   id: string;             // "1-2"
   world: number;
-  index: number;          // 1..4
+  index: number;          // 1..6 (6 = chefe)
   name: string;
   amulet?: string;
   waves?: EnemyType[][];

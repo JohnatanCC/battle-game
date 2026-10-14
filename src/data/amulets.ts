@@ -10,7 +10,7 @@ export const AMULETS: AmuletDef[] = [
   },
   {
     id: 'broken_wing', name: 'Pena da Asa Partida', color: 'blue', world: 1,
-    desc: ['Habilidade: INVESTIDA.', 'Avança rápido e fica', 'invulnerável durante', 'o movimento.'],
+    desc: ['Habilidade: INVESTIDA', '(tecla SHIFT).', 'Avança rápido e fica', 'invulnerável durante', 'o movimento.'],
     flavor: 'Uma pena da asa que te arrancaram. Ainda lembra o voo.',
     mods: {}, ability: 'dash',
   },
@@ -19,6 +19,18 @@ export const AMULETS: AmuletDef[] = [
     desc: ['+15% de velocidade', 'de ataque.'],
     flavor: 'Os corvos guardaram tua pressa. Devolvem-na agora.',
     mods: { attackSpeed: 0.15 },
+  },
+  {
+    id: 'gravedigger_relic', name: 'Relicário do Coveiro', color: 'red', world: 1,
+    desc: ['Ao limpar cada onda,', 'recupera 1 de vida.'],
+    flavor: 'Quem enterra os mortos aprende a seguir em frente.',
+    mods: { waveHeal: 1 },
+  },
+  {
+    id: 'spectral_blade', name: 'Lâmina Espectral', color: 'blue', world: 1,
+    desc: ['Habilidade: LÂMINA', 'ESPECTRAL. Dispara um', 'corte de luz que', 'atravessa inimigos.', 'Custa 1/2 carga.'],
+    flavor: 'O eco do golpe que um dia partiu as trevas.',
+    mods: {}, ability: 'spectral',
   },
   // ---------- MUNDO 2 ----------
   {
@@ -39,6 +51,18 @@ export const AMULETS: AmuletDef[] = [
     flavor: 'Os passos com que levavas a palavra do Trono.',
     mods: { moveSpeed: 0.15, damageAdd: 4 },
   },
+  {
+    id: 'cherub_plume', name: 'Pluma do Querubim', color: 'yellow', world: 2,
+    desc: ['Permite PULO DUPLO.', 'Golpes para baixo', 'causam +50% de dano.'],
+    flavor: 'Leve como a primeira asa que tiveste.',
+    mods: { doubleJump: true, pogoBonus: 0.5 },
+  },
+  {
+    id: 'seraph_tear', name: 'Lágrima do Serafim', color: 'red', world: 2,
+    desc: ['Uma vez por arena,', 'sobrevive a um golpe', 'fatal com 1 de vida.'],
+    flavor: 'Ele chorou ao te lançar ao abismo.',
+    mods: { cheatDeath: true },
+  },
   // ---------- MUNDO 3 ----------
   {
     id: 'usurped_heart', name: 'Coração Usurpado', color: 'red', world: 3,
@@ -57,6 +81,18 @@ export const AMULETS: AmuletDef[] = [
     desc: ['+10 de dano.', '-1 de vida máxima.', 'Magias custam +10%', 'de energia.'],
     flavor: 'O fio da tua antiga lâmina. Também corta quem a empunha.',
     mods: { damageAdd: 10, maxHp: -1, energyCost: 0.1 },
+  },
+  {
+    id: 'void_eye', name: 'Olho do Abismo', color: 'yellow', world: 3,
+    desc: ['+20% de chance de', 'crítico. Críticos', 'recarregam energia.'],
+    flavor: 'Tudo o que olhaste no fundo agora te enxerga também.',
+    mods: { crit: 0.2, critEnergy: 0.2 },
+  },
+  {
+    id: 'final_judgment', name: 'Selo do Juízo Final', color: 'blue', world: 3,
+    desc: ['Habilidade: JUÍZO.', 'Lança 8 lanças de luz', 'ao teu redor, com', 'dano altíssimo.', 'Custa 2 cargas.'],
+    flavor: 'A sentença que um dia foi tua de proferir.',
+    mods: {}, ability: 'judgment',
   },
 ];
 
