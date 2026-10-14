@@ -59,8 +59,8 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
   shieldRing: Phaser.GameObjects.Arc;
   weaponFx: Phaser.GameObjects.Sprite | null = null;
 
-  constructor(public arena: ArenaApi, x: number, y: number, stats: Stats) {
-    super(arena, x, y, 'hero', 0);
+  constructor(public arena: ArenaApi, x: number, y: number, stats: Stats, public skin = 'hero') {
+    super(arena, x, y, skin, 0);
     arena.add.existing(this);
     arena.physics.add.existing(this);
     this.stats = stats;
@@ -70,7 +70,7 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
     this.body.setSize(10, 22).setOffset(11, 9);
     this.body.setMaxVelocityY(MAX_FALL);
     this.setCollideWorldBounds(true);
-    this.play('hero-idle');
+    this.play(`${skin}-idle`);
 
     this.shieldRing = arena.add.circle(x, y, 16).setStrokeStyle(1, 0x8ef0ff, 0.8).setDepth(DEPTH.hero + 1).setVisible(false);
   }
@@ -472,7 +472,7 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
 
   // ------------------------------------------------------------------ visual
   private spawnGhost() {
-    const g = this.arena.add.image(this.x, this.y, 'hero', this.frame.name)
+    const g = this.arena.add.image(this.x, this.y, this.skin, this.frame.name)
       .setFlipX(this.flipX).setTint(0x8ef0ff).setAlpha(0.6).setDepth(DEPTH.hero - 1);
     this.arena.tweens.add({ targets: g, alpha: 0, duration: 200, onComplete: () => g.destroy() });
   }
@@ -503,8 +503,8 @@ export class Hero extends Phaser.Physics.Arcade.Sprite {
       return this.pose(HERO_FRAMES.strike);
     }
     if (!this.grounded) return this.pose(this.body.velocity.y < 0 ? HERO_FRAMES.jump : HERO_FRAMES.fall);
-    if (Math.abs(this.body.velocity.x) > 5) return this.loop('hero-run');
-    this.loop('hero-idle');
+    if (Math.abs(this.body.velocity.x) > 5) return this.loop(`${this.skin}-run`);
+    this.loop(`${this.skin}-idle`);
   }
 
   destroy(fromScene?: boolean) {

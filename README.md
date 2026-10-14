@@ -55,5 +55,7 @@ Coloque os MP3 gerados no Suno em `public/music/` com os nomes listados em
 
 - `?level=2-4`: abre direto numa arena (ex.: o Serafim)
 - `?scene=Map`: abre direto numa cena
+- `?scene=Prologue&act=3`: abre a cinemática de abertura num ato específico (1, 2 ou 3)
+- `?level=prologue`: abre direto o tutorial
 - No console: `__auto(3000)` joga sozinho (invencível), `__state()` resume a arena e
   `__sim(n)` avança n quadros

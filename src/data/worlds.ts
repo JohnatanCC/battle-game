@@ -75,9 +75,16 @@ export const WORLDS: WorldDef[] = [
   },
 ];
 
-export const LEVEL_BY_ID: Record<string, LevelDef> = Object.fromEntries(
-  WORLDS.flatMap((w) => w.levels.map((l) => [l.id, l])),
-);
+/** Prólogo jogável (tutorial) logo após a cinemática de abertura */
+export const PROLOGUE: LevelDef = {
+  id: 'prologue', world: 1, index: 0, name: 'Despertar', platforms: L_A, fragments: 10, tutorial: true,
+  waves: [['skeleton', 'skeleton', 'zombie']],
+};
+
+export const LEVEL_BY_ID: Record<string, LevelDef> = Object.fromEntries([
+  ...WORLDS.flatMap((w) => w.levels.map((l) => [l.id, l])),
+  [PROLOGUE.id, PROLOGUE],
+]);
 
 export const LEVEL_ORDER: string[] = WORLDS.flatMap((w) => w.levels.map((l) => l.id));
 
@@ -85,6 +92,42 @@ export const ENEMY_NAMES: Record<string, string> = {
   skeleton: 'Esqueleto', archer: 'Arqueiro Ossudo', zombie: 'Zumbi', crow: 'Corvo Amaldiçoado',
   knight: 'Cavaleiro Alado', ofanim: 'Ofanim', sentinel: 'Sentinela Dourada',
   fallen: 'Anjo Corrompido', voideye: 'Olho do Vazio', profane: 'Cavaleiro Profano',
+};
+
+/** Falas dos chefes: antes da luta, nas trocas de fase e na derrota */
+export const BOSS_DIALOGUE: Record<string, { intro: string[]; phase: Record<number, string>; defeat: string }> = {
+  boneking: {
+    intro: [
+      `Mais um que despenca do alto...
+Eu também já fui luz, sabias?`,
+      `Aqui embaixo ninguém precisa provar nada.
+Fica. Descansa. Apodrece comigo.`,
+    ],
+    phase: { 2: 'Por que insistes? A luz te abandonou!' },
+    defeat: 'Então... ainda tens fé. Que inveja.',
+  },
+  seraph: {
+    intro: [
+      `Fui eu quem desferiu o golpe que te lançou ao abismo.
+Não por ódio. Por dever.`,
+      `A lei do Trono não se curva a lembranças.
+Se és digno, prova-o contra mim!`,
+    ],
+    phase: { 2: 'Teu brilho... é o mesmo de antes?!' },
+    defeat: 'Vai. E lembra-te de quem eras.',
+  },
+  falseangel: {
+    intro: [
+      'Voltaste. Que tolice comovente.',
+      `Este trono nunca foi teu.
+Foi do teu orgulho.`,
+    ],
+    phase: {
+      2: 'Ainda não me reconheces? Olha bem... este rosto é o teu.',
+      3: 'Se eu cair, cais comigo!',
+    },
+    defeat: 'Então... és mais do que eu jamais fui...',
+  },
 };
 
 export const BOSS_NAMES: Record<string, { name: string; title: string }> = {

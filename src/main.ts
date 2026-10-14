@@ -9,6 +9,7 @@ import { BuildScene } from './scenes/BuildScene';
 import { ArenaScene } from './scenes/ArenaScene';
 import { RewardScene } from './scenes/RewardScene';
 import { EndingScene } from './scenes/EndingScene';
+import { PrologueScene } from './scenes/PrologueScene';
 
 async function boot() {
   try { await document.fonts.load('8px "Press Start 2P"'); } catch { /* segue sem a fonte */ }
@@ -23,7 +24,7 @@ async function boot() {
     scale: { mode: Phaser.Scale.FIT, autoCenter: Phaser.Scale.CENTER_BOTH },
     input: { gamepad: true },
     physics: { default: 'arcade', arcade: { gravity: { x: 0, y: GRAVITY }, debug: false } },
-    scene: [BootScene, TitleScene, StoryScene, MapScene, BuildScene, ArenaScene, RewardScene, EndingScene],
+    scene: [BootScene, TitleScene, StoryScene, MapScene, BuildScene, ArenaScene, RewardScene, EndingScene, PrologueScene],
   });
   if (import.meta.env.DEV) {
     (window as unknown as { __game: Phaser.Game }).__game = game;

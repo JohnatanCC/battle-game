@@ -10,7 +10,9 @@ import type { ArenaApi } from '../entities/api';
 import { Controls } from '../systems/Controls';
 import { computeStats, type Stats } from '../state/Stats';
 import { Save } from '../state/Save';
-import { LEVEL_BY_ID, WORLDS, BOSS_NAMES } from '../data/worlds';
+import { LEVEL_BY_ID, WORLDS, BOSS_NAMES, BOSS_DIALOGUE } from '../data/worlds';
+import { DialogueBox } from '../ui/Dialogue';
+import { Tutorial } from './Tutorial';
 import type { EnemyType, LevelDef, WorldDef } from '../data/types';
 import { Hud } from '../ui/Hud';
 import { txt, panel, Menu, dim, fadeIn, goTo } from '../ui/ui';
@@ -19,7 +21,7 @@ import { Sfx } from '../audio/Sfx';
 import { Music } from '../audio/Music';
 import { AMULET_BY_ID, COLOR_FRAME } from '../data/amulets';
 
-type Phase = 'intro' | 'between' | 'fight' | 'boss' | 'cleared' | 'dead';
+type Phase = 'intro' | 'tutorial' | 'between' | 'fight' | 'boss' | 'cleared' | 'dead';
 
 export class ArenaScene extends Phaser.Scene implements ArenaApi {
   hero!: Hero;
@@ -28,6 +30,13 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
   floorY = FLOOR_Y;
   world = 1;
   frozen = false;
+  /** Durante diálogos: herói e inimigos ficam parados */
+  cutscene = false;
+  dialogue: DialogueBox | null = null;
+  tutorial: Tutorial | null = null;
+  subtitle: Phaser.GameObjects.GameObject[] = [];
+  bossSpoke = false;
+  confirmClose: (() => void) | null = null;
 
   level!: LevelDef;
   worldDef!: WorldDef;
@@ -73,6 +82,11 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     this.pauseMenu = null;
     this.deathMenu = null;
     this.firstClear = !Save.isCleared(this.level.id);
+    this.cutscene = false;
+    this.dialogue = null;
+    this.tutorial = null;
+    this.subtitle = [];
+    this.bossSpoke = false;
   }
 
   create() {
@@ -87,7 +101,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
 
     this.buildStage();
 
-    this.hero = new Hero(this, 80, FLOOR_Y - 20, this.stats);
+    this.hero = new Hero(this, 80, FLOOR_Y - 20, this.stats, Save.heroTexture());
     this.enemies = this.add.group();
     this.shots = this.physics.add.group({ allowGravity: false });
     this.shardObjs = this.physics.add.group();
@@ -110,12 +124,13 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     });
     this.physics.add.overlap(this.hero, this.shardObjs, (_h, s) => this.collectShard(s as Phaser.Physics.Arcade.Sprite));
 
-    const label = `${this.level.id}  ${this.level.name}`;
+    const label = this.level.tutorial ? `Prólogo  ${this.level.name}` : `${this.level.id}  ${this.level.name}`;
     this.hud = new Hud(this, this.hero, label);
     this.hud.setShards(0);
 
     Music.play(this.level.boss ? this.worldDef.bossMusic : this.worldDef.music);
-    this.banner(this.level.boss ? BOSS_NAMES[this.level.boss].name : this.level.name,
+    if (this.level.tutorial) this.banner('PRÓLOGO', 'Despertar', '#ffd75e');
+    else this.banner(this.level.boss ? BOSS_NAMES[this.level.boss].name : this.level.name,
       this.level.boss ? BOSS_NAMES[this.level.boss].title : `${this.worldDef.name}  -  ${this.level.id}`,
       this.level.boss ? '#e83b3b' : '#ffd75e');
 
@@ -323,15 +338,15 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
   }
 
   // ------------------------------------------------------------------ fluxo de ondas
-  private aliveCount() {
+  aliveCount() {
     return (this.enemies.getChildren() as unknown as Enemy[]).filter((e) => !e.dead && !e.summoned).length;
   }
 
-  private startWave(i: number) {
+  startWave(i: number) {
     const waves = this.level.waves!;
     this.waveIndex = i;
     this.phase = 'fight';
-    this.hud.setWave(`ONDA ${i + 1}/${waves.length}`);
+    this.hud.setWave(this.level.tutorial ? 'HORDA' : `ONDA ${i + 1}/${waves.length}`);
     Sfx.play('wave');
     waves[i].forEach((type, k) => {
       this.time.delayedCall(k * 380, () => {
@@ -365,7 +380,43 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     this.hud.setWave('');
   }
 
+  /** Chamado quando o chefe termina de entrar: ele fala antes da luta */
+  onBossReady() {
+    const b = this.boss;
+    if (!b || this.bossSpoke) return;
+    this.bossSpoke = true;
+    const lines = BOSS_DIALOGUE[b.bossKey]?.intro ?? [];
+    const start = () => {
+      this.cutscene = false;
+      this.dialogue = null;
+      this.controls.swallow();
+      Sfx.play('bossRoar');
+      this.shake(0.015, 600);
+    };
+    if (!lines.length) { start(); return; }
+    this.cutscene = true;
+    this.hero.setVelocityX(0);
+    Music.duck(true);
+    const color = b.bossKey === 'seraph' ? '#ffd75e' : b.bossKey === 'boneking' ? '#c060ff' : '#e83b3b';
+    this.dialogue = new DialogueBox(this, BOSS_NAMES[b.bossKey].name, color, lines, () => {
+      Music.duck(false);
+      start();
+    });
+  }
+
+  /** Fala curta do chefe durante a luta (não pausa o jogo) */
+  bossSay(text: string) {
+    this.subtitle.forEach((o) => o.destroy());
+    const y = GAME_H - 56;
+    const t = txt(this, GAME_W / 2, y, text, { origin: [0.5, 0], color: '#ffd75e', align: 'center' }).setDepth(DEPTH.overlay);
+    const bg = this.add.rectangle(GAME_W / 2, y + t.height / 2, t.width + 16, t.height + 8, 0x0b0814, 0.75).setDepth(DEPTH.overlay - 1);
+    this.subtitle = [bg, t];
+    this.tweens.add({ targets: this.subtitle, alpha: 0, delay: 3200, duration: 500, onComplete: () => { bg.destroy(); t.destroy(); } });
+  }
+
   private onBossDefeated(b: Boss) {
+    const line = BOSS_DIALOGUE[b.bossKey]?.defeat;
+    if (line) this.bossSay(line);
     this.phase = 'cleared';
     for (const e of this.allTargets()) if (!e.dead && !e.isBoss) e.die();
     this.clearThreats();
@@ -396,7 +447,8 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     this.clearThreats();
     Sfx.play('victory');
     Music.duck(true);
-    this.banner('ARENA PURIFICADA', this.firstClear && this.level.amulet ? 'Recolha o amuleto' : undefined, '#8ef0ff');
+    if (this.level.tutorial) this.banner('DESPERTAR CONCLUÍDO', 'Tua ascensão começa agora', '#8ef0ff');
+    else this.banner('ARENA PURIFICADA', this.firstClear && this.level.amulet ? 'Recolha o fragmento do teu poder' : undefined, '#8ef0ff');
     if (this.firstClear && this.level.amulet) {
       const a = AMULET_BY_ID[this.level.amulet];
       const img = this.physics.add.image(GAME_W / 2, -20, 'amulet', COLOR_FRAME[a.color]).setDepth(DEPTH.fx);
@@ -429,7 +481,15 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
 
   private finishLevel() {
     if (this.phase === 'dead') return;
+    if (this.level.tutorial) { this.completePrologue(this.runShards + this.level.fragments); return; }
     goTo(this, 'Reward', { levelId: this.level.id, shards: this.runShards, firstClear: this.firstClear }, 500);
+  }
+
+  private completePrologue(shards: number) {
+    Save.data.tutorialDone = true;
+    Save.data.fragments += shards;
+    Save.persist();
+    goTo(this, 'Map', {}, 700);
   }
 
   /** Chamado pelo Falso Anjo ao entrar na fase final */
@@ -473,10 +533,30 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
       { label: 'Continuar', onSelect: () => this.togglePause() },
       { label: `Música  ${vol(Save.settings.music)}`, onSelect: () => this.cycleVolume('music') },
       { label: `Efeitos ${vol(Save.settings.sfx)}`, onSelect: () => this.cycleVolume('sfx') },
-      { label: 'Reiniciar arena', onSelect: () => { this.unpauseClean(); this.scene.restart({ levelId: this.level.id }); } },
-      { label: 'Voltar ao mapa', onSelect: () => { this.unpauseClean(); goTo(this, 'Map'); } },
+      { label: 'Reiniciar arena', onSelect: () => this.confirm('Reiniciar a arena?', () => { this.unpauseClean(); this.scene.restart({ levelId: this.level.id }); }) },
+      this.level.tutorial
+        ? { label: 'Pular tutorial', onSelect: () => this.confirm('Pular o prólogo?', () => { this.unpauseClean(); this.completePrologue(this.level.fragments); }) }
+        : { label: 'Voltar ao mapa', onSelect: () => this.confirm('Abandonar a arena?', () => { this.unpauseClean(); goTo(this, 'Map'); }) },
     ], { depth: D + 2, spacing: 18 });
     this.pauseUi = items;
+  }
+
+  /** Pergunta de confirmação dentro da pausa */
+  private confirm(question: string, yes: () => void) {
+    const D = DEPTH.overlay + 20;
+    const main = this.pauseMenu;
+    main?.setVisible(false);
+    const box = panel(this, GAME_W / 2 - 130, 140, 260, 84, { border: 0xe83b3b }).setDepth(D);
+    const q = txt(this, GAME_W / 2, 152, question, { origin: [0.5, 0], color: '#ffd75e' }).setDepth(D + 1);
+    const warn = txt(this, GAME_W / 2, 166, 'O progresso desta arena se perde.', { origin: [0.5, 0], color: '#8a7cc8' }).setDepth(D + 1);
+    const close = () => { m.destroy(); box.destroy(); q.destroy(); warn.destroy(); this.pauseMenu = main; main?.setVisible(true); this.confirmClose = null; this.controls.swallow(); };
+    this.confirmClose = close;
+    const m: Menu = new Menu(this, GAME_W / 2 - 20, 186, [
+      { label: 'Não', onSelect: () => close() },
+      { label: 'Sim', onSelect: () => { close(); yes(); } },
+    ], { depth: D + 1, spacing: 14 });
+    this.pauseMenu = m;
+    this.controls.swallow();
   }
 
   private cycleVolume(kind: 'music' | 'sfx') {
@@ -523,10 +603,13 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
     const dt = Math.min(0.05, delta / 1000);
 
     if (this.deathMenu) { this.deathMenu.update(this.controls); return; }
-    if (this.controls.pressed('pause') && this.phase !== 'dead') { this.togglePause(); return; }
+    if (!this.paused && this.controls.pressed('pause') && this.phase !== 'dead') { this.togglePause(); return; }
     if (this.paused) {
       this.pauseMenu?.update(this.controls);
-      if (this.controls.pressed('back') && !this.controls.pressed('pause')) this.togglePause();
+      if (this.controls.pressed('back') || this.controls.pressed('pause')) {
+        if (this.confirmClose) this.confirmClose();
+        else this.togglePause();
+      }
       return;
     }
 
@@ -540,7 +623,15 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
       this.anims.resumeAll();
     }
 
+    if (this.dialogue) {
+      this.dialogue.update(dt, this.controls);
+      this.hero.setVelocityX(0);
+      this.hud.update(this.boss && !this.boss.dead ? this.boss : null);
+      return;
+    }
+
     this.hero.tick(dt, this.controls);
+    this.tutorial?.update(dt);
     for (const h of this.hazards) h.update(dt);
     this.hazards = this.hazards.filter((h) => !h.dead);
     this.updateShards(dt);
@@ -552,6 +643,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
       case 'intro':
         if (this.phaseTime <= 0) {
           if (this.level.boss) this.startBoss();
+          else if (this.level.tutorial) { this.phase = 'tutorial'; this.hud.setWave('PRÓLOGO'); this.tutorial = new Tutorial(this); }
           else this.startWave(0);
         }
         break;

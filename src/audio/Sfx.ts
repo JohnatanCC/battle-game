@@ -141,6 +141,10 @@ const SOUNDS = {
   defeat: (t: T) => { [392, 349, 311, 262].forEach((f, i) => t({ wave: 'triangle', f0: f, dur: i === 3 ? 0.9 : 0.25, vol: 0.18, delay: i * 0.25 })); },
   card: (t: T) => { t({ wave: 'noise', f0: 3000, f1: 1000, dur: 0.1, vol: 0.1, filter: 4000 }); t({ wave: 'triangle', f0: 1200, dur: 0.1, vol: 0.08, delay: 0.04 }); },
   amulet: (t: T) => { [659, 784, 988, 1318, 1568].forEach((f, i) => t({ wave: 'triangle', f0: f, dur: 0.3, vol: 0.12, delay: i * 0.07 })); },
+  heartbeat: (t: T) => { t({ wave: 'sine', f0: 70, f1: 40, dur: 0.18, vol: 0.45 }); t({ wave: 'sine', f0: 62, f1: 38, dur: 0.22, vol: 0.35, delay: 0.22 }); },
+  shatter: (t: T) => { [2637, 3136, 2349, 3520, 1975].forEach((f, i) => t({ wave: 'triangle', f0: f, f1: f * 0.7, dur: 0.25, vol: 0.09, delay: i * 0.035 })); t({ wave: 'noise', f0: 6000, f1: 2000, dur: 0.25, vol: 0.15 }); },
+  whoosh: (t: T) => t({ wave: 'noise', f0: 300, f1: 2500, dur: 0.6, vol: 0.2, filter: 2000, attack: 0.25 }),
+  sparkle: (t: T) => { [1568, 2093, 2637].forEach((f, i) => t({ wave: 'sine', f0: f, dur: 0.4, vol: 0.07, delay: i * 0.08 })); },
   bleed: (t: T) => t({ wave: 'noise', f0: 400, f1: 200, dur: 0.05, vol: 0.06, filter: 600 }),
 };
 

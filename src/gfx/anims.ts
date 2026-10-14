@@ -1,4 +1,5 @@
 import Phaser from 'phaser';
+import { HERO_VARIANTS } from './heroArt';
 
 function anim(scene: Phaser.Scene, key: string, tex: string, frames: number[], frameRate: number, repeat = -1) {
   if (scene.anims.exists(key)) scene.anims.remove(key);
@@ -6,8 +7,10 @@ function anim(scene: Phaser.Scene, key: string, tex: string, frames: number[], f
 }
 
 export function buildAnims(scene: Phaser.Scene) {
-  anim(scene, 'hero-idle', 'hero', [0, 1], 3);
-  anim(scene, 'hero-run', 'hero', [2, 3, 4, 5], 11);
+  for (const k of HERO_VARIANTS) {
+    anim(scene, `${k}-idle`, k, [0, 1], 3);
+    anim(scene, `${k}-run`, k, [2, 3, 4, 5], 11);
+  }
 
   anim(scene, 'skeleton-walk', 'skeleton', [0, 1, 2, 3], 7);
   anim(scene, 'archer-walk', 'archer', [0, 1], 4);

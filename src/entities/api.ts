@@ -15,6 +15,9 @@ export interface ArenaApi extends Phaser.Scene {
   floorY: number;
   world: number;
   frozen: boolean;
+  cutscene: boolean;
+  onBossReady(): void;
+  bossSay(text: string): void;
 
   allTargets(): Enemy[];
   shotList(): Shot[];

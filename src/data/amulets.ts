@@ -5,57 +5,57 @@ export const AMULETS: AmuletDef[] = [
   {
     id: 'ossified_heart', name: 'Coração Ossificado', color: 'red', world: 1,
     desc: ['+2 de vida máxima.'],
-    flavor: 'Bate devagar, mas nunca para.',
+    flavor: 'Teu antigo vigor, petrificado entre os mortos.',
     mods: { maxHp: 2 },
   },
   {
     id: 'broken_wing', name: 'Pena da Asa Partida', color: 'blue', world: 1,
     desc: ['Habilidade: INVESTIDA.', 'Avança rápido e fica', 'invulnerável durante', 'o movimento.'],
-    flavor: 'Ainda lembra como era voar.',
+    flavor: 'Uma pena da asa que te arrancaram. Ainda lembra o voo.',
     mods: {}, ability: 'dash',
   },
   {
     id: 'crow_feather', name: 'Pena do Corvo', color: 'yellow', world: 1,
     desc: ['+15% de velocidade', 'de ataque.'],
-    flavor: 'Os corvos aprenderam a ter pressa.',
+    flavor: 'Os corvos guardaram tua pressa. Devolvem-na agora.',
     mods: { attackSpeed: 0.15 },
   },
   // ---------- MUNDO 2 ----------
   {
     id: 'golden_chalice', name: 'Cálice Dourado', color: 'red', world: 2,
     desc: ['+1 de vida máxima.', 'Cura 35% mais rápido.'],
-    flavor: 'Nunca esvazia por completo.',
+    flavor: 'O cálice de onde bebias a graça. Ainda não secou.',
     mods: { maxHp: 1, healSpeed: 0.35 },
   },
   {
     id: 'judgment_horn', name: 'Trombeta do Juízo', color: 'blue', world: 2,
     desc: ['Habilidade: GRITO SÔNICO.', 'Empurra inimigos numa', 'grande área, atordoa', 'por 2s e destrói', 'projéteis. Custa 1 carga.'],
-    flavor: 'O som que abriu os céus.',
+    flavor: 'Tua voz de comando, roubada e trancada nos Átrios.',
     mods: {}, ability: 'scream',
   },
   {
     id: 'messenger_sandals', name: 'Sandálias do Mensageiro', color: 'yellow', world: 2,
     desc: ['+15% de velocidade', 'de movimento.', '+4 de dano.'],
-    flavor: 'Mensagens divinas não esperam.',
+    flavor: 'Os passos com que levavas a palavra do Trono.',
     mods: { moveSpeed: 0.15, damageAdd: 4 },
   },
   // ---------- MUNDO 3 ----------
   {
     id: 'usurped_heart', name: 'Coração Usurpado', color: 'red', world: 3,
     desc: ['Cura 50% mais rápido.', 'Regenera 1 vida a', 'cada 30s.', '-50% de energia por golpe.'],
-    flavor: 'Arrancado do peito do falso rei.',
+    flavor: 'O coração que o falso anjo tomou de ti. Bate com rancor.',
     mods: { healSpeed: 0.5, regenEvery: 30, energyGain: -0.5 },
   },
   {
     id: 'celestial_aegis', name: 'Égide Celeste', color: 'blue', world: 3,
     desc: ['Com a vida cheia, um', 'escudo bloqueia', 'projéteis. Cada bloqueio', 'consome 10% da', 'barra de energia.'],
-    flavor: 'Protege apenas os inteiros.',
+    flavor: 'O escudo que juraste erguer. Só protege os inteiros.',
     mods: { projectileShield: true },
   },
   {
     id: 'martyr_blade', name: 'Lâmina do Mártir', color: 'yellow', world: 3,
     desc: ['+10 de dano.', '-1 de vida máxima.', 'Magias custam +10%', 'de energia.'],
-    flavor: 'Todo poder cobra seu sangue.',
+    flavor: 'O fio da tua antiga lâmina. Também corta quem a empunha.',
     mods: { damageAdd: 10, maxHp: -1, energyCost: 0.1 },
   },
 ];

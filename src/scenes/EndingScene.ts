@@ -29,7 +29,7 @@ export class EndingScene extends Phaser.Scene {
       x: { min: 0, max: GAME_W }, y: -6, lifespan: 9000, speedY: { min: 12, max: 26 }, speedX: { min: -10, max: 10 },
       rotate: { min: 0, max: 360 }, alpha: { start: 1, end: 0 }, frequency: 140,
     });
-    const hero = this.add.sprite(GAME_W / 2, 64, 'hero', 0).setScale(2).play('hero-idle');
+    const hero = this.add.sprite(GAME_W / 2, 64, 'hero_h3', 0).setScale(2).play('hero_h3-idle');
     this.add.image(hero.x, hero.y - 24, 'glow').setScale(3).setTint(0xffd75e).setAlpha(0.5);
 
     txt(this, GAME_W / 2, 110, 'FIM', { size: 32, color: '#ffd75e', origin: [0.5, 0] });

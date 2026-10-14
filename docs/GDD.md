@@ -4,10 +4,32 @@ Jogo de batalhas em arena, em pixel art 16-bit (640×360) e visão lateral com p
 
 ## Lore
 
-Tu eras a Chama do Trono, o primeiro guardião dos céus. Um anjo de rosto dourado
-sussurrou mentiras ao reino: tua coroa foi partida, tuas asas arrancadas, e foste lançado
-às profundezas. Despertas entre ossos e corvos com uma última faísca de divindade.
-Mundo após mundo, recuperas teu poder e sobes para derrubar o **Falso Anjo** que se senta no teu trono.
+Tu eras a Chama do Trono, o mais fiel dos guardiões dos céus. Um anjo de máscara dourada
+sussurrou mentiras ao reino, e o reino te julgou: o Serafim desferiu o golpe que partiu tua auréola
+e arrancou tuas asas, e foste lançado às profundezas. Tudo o que eras foi partido em fragmentos
+e entregue aos que te julgaram.
+
+O tema é **provar o próprio valor**. Cada amuleto é um pedaço do teu antigo poder,
+e cada chefe é uma provação:
+
+| Chefe | Quem é | O que representa |
+|---|---|---|
+| Rei Ossário | Outro caído, que desistiu e virou rei dos mortos | O que tu poderias te tornar ("Fica. Aqui ninguém precisa provar nada.") |
+| Serafim Guardião | Quem desferiu o golpe da tua queda, por dever, não por ódio | A lei que te julgou ("Se és digno, prova-o contra mim!") |
+| O Falso Anjo | Na fase 2 a máscara quebra e revela **o teu próprio rosto** | Teu orgulho, que ficou no trono quando caíste |
+
+O final fecha o arco: o trono é retomado não por herança, mas por mérito.
+
+### Narrativa no jogo
+
+- **Cinemática de abertura** (`PrologueScene`), em três atos:
+  - **O Julgamento:** nos céus, a acusação e o golpe do Serafim.
+  - **A Queda:** a descida do céu dourado até o abismo.
+  - **O Despertar:** o impacto no Ossuário, os corvos e a última faísca.
+- **Prólogo jogável** ("Despertar"): um tutorial passo a passo antes do mapa.
+- **Diálogos dos chefes:** falas antes da luta (o jogo pausa), nas trocas de fase e na derrota.
+- **Amuletos:** cada um traz um texto sobre o pedaço de poder que representa.
+- **Auréola do herói:** se recompõe a cada chefe vencido (rachada → restaurada no final).
 
 A identidade visual do herói conta a história: auréola rachada, uma única asa esfarrapada e manto real.
 

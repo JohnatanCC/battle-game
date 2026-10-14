@@ -95,6 +95,7 @@ export interface LevelDef {
   bossWeapon?: WeaponId;
   platforms: Platform[];
   fragments: number;
+  tutorial?: boolean;
 }
 
 export interface WorldDef {

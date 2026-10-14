@@ -15,6 +15,7 @@ export interface SaveData {
   deaths: number;
   finished: boolean;
   introSeen: boolean;
+  tutorialDone: boolean;
 }
 
 export interface Settings {
@@ -29,7 +30,7 @@ const SETTINGS_KEY = 'trono-caido-settings-v1';
 function fresh(): SaveData {
   return {
     v: 1, cleared: [], amulets: [], equipped: { red: [], blue: [], yellow: [] },
-    weapons: ['sword'], weapon: 'sword', cards: {}, fragments: 0, deaths: 0, finished: false, introSeen: false,
+    weapons: ['sword'], weapon: 'sword', cards: {}, fragments: 0, deaths: 0, finished: false, introSeen: false, tutorialDone: false,
   };
 }
 
@@ -59,7 +60,7 @@ class SaveStore {
 
   hasGame() {
     const s = read<SaveData>(SAVE_KEY);
-    return !!s && (s.cleared.length > 0 || s.introSeen);
+    return !!s && (s.cleared.length > 0 || s.introSeen || s.tutorialDone);
   }
 
   newGame() {
@@ -80,6 +81,13 @@ class SaveStore {
   /** Próximo nível não concluído */
   nextLevel(): string {
     return LEVEL_ORDER.find((id) => !this.isCleared(id)) ?? LEVEL_ORDER[LEVEL_ORDER.length - 1];
+  }
+
+  /** Textura do herói conforme o poder recuperado (auréola se recompõe a cada chefe) */
+  heroTexture() {
+    if (this.data.finished) return 'hero_h3';
+    const n = ['1-4', '2-4'].filter((id) => this.isCleared(id)).length;
+    return ['hero', 'hero_h1', 'hero_h2'][n];
   }
 
   cardCount(id: string) { return this.data.cards[id] ?? 0; }

@@ -111,18 +111,20 @@ export class RewardScene extends Phaser.Scene {
     const am = AMULET_BY_ID[this.level.amulet!];
     const a = this.add2.bind(this);
     Sfx.play('amulet');
-    a(panel(this, GAME_W / 2 - 170, 50, 340, 250));
-    a(txt(this, GAME_W / 2, 64, 'AMULETO OBTIDO', { color: '#8ef0ff', origin: [0.5, 0] }));
-    const icon = a(this.add.image(GAME_W / 2, 112, 'amulet', COLOR_FRAME[am.color]).setScale(3));
-    const glow = a(this.add.image(GAME_W / 2, 112, 'glow').setScale(5).setTint(Phaser.Display.Color.HexStringToColor(COLOR_HEX[am.color]).color).setAlpha(0.5));
-    glow.setDepth(-1);
-    this.tweens.add({ targets: icon, y: 106, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
-    a(txt(this, GAME_W / 2, 146, am.name, { color: COLOR_HEX[am.color], origin: [0.5, 0] }));
-    a(txt(this, GAME_W / 2, 160, `Amuleto ${COLOR_NAME[am.color]}`, { color: '#8a7cc8', origin: [0.5, 0] }));
-    am.desc.forEach((d, i) => a(txt(this, GAME_W / 2, 180 + i * 12, d, { origin: [0.5, 0] })));
+    a(panel(this, GAME_W / 2 - 220, 26, 440, 312));
+    a(txt(this, GAME_W / 2, 40, 'FRAGMENTO DE PODER RECUPERADO', { color: '#8ef0ff', origin: [0.5, 0] }));
+    const icon = a(this.add.image(GAME_W / 2, 86, 'amulet', COLOR_FRAME[am.color]).setScale(3));
+    this.tweens.add({ targets: icon, y: 80, duration: 800, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
+    a(txt(this, GAME_W / 2, 118, am.name, { color: COLOR_HEX[am.color], origin: [0.5, 0] }));
+    a(txt(this, GAME_W / 2, 132, `Amuleto ${COLOR_NAME[am.color]}`, { color: '#8a7cc8', origin: [0.5, 0] }));
+    let y = 154;
+    am.desc.forEach((d) => { a(txt(this, GAME_W / 2, y, d, { origin: [0.5, 0] })); y += 12; });
+    y += 10;
+    a(txt(this, GAME_W / 2, y, '"' + am.flavor + '"', { color: '#8a7cc8', origin: [0.5, 0], align: 'center', wrap: 400 }));
     const eq = Save.isEquipped(am.id);
-    a(txt(this, GAME_W / 2, 250, eq ? 'Equipado automaticamente.' : 'Slot cheio: troque na tela de Build.', { color: eq ? '#8ef0ff' : '#e0a030', origin: [0.5, 0] }));
-    a(txt(this, GAME_W / 2, 276, '[ENTER] continuar', { color: '#5a4a9a', origin: [0.5, 0] }));
+    a(txt(this, GAME_W / 2, 280, eq ? 'Equipado automaticamente.' : 'Slot cheio: troque na tela de Build.', { color: eq ? '#8ef0ff' : '#e0a030', origin: [0.5, 0] }));
+    if (am.ability && eq) a(txt(this, GAME_W / 2, 294, 'Use a habilidade com [K]', { color: '#ffd75e', origin: [0.5, 0] }));
+    a(txt(this, GAME_W / 2, 316, '[ENTER] continuar', { color: '#5a4a9a', origin: [0.5, 0] }));
   }
 
   private drawWeapon() {

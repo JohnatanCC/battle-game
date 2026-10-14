@@ -4,6 +4,7 @@ import { Sfx } from '../audio/Sfx';
 import { DEPTH, GAME_W } from '../config';
 import type { ArenaApi } from './api';
 import type { BossType } from '../data/types';
+import { BOSS_DIALOGUE } from '../data/worlds';
 
 const rand = Phaser.Math.FloatBetween;
 
@@ -52,9 +53,8 @@ export abstract class Boss extends Enemy {
     this.y = Phaser.Math.Linear(-60, this.baseY, 1 - Math.max(0, this.stateTime) / this.introTime);
     this.setVelocity(0, 0);
     if (this.stateTime <= 0) {
-      Sfx.play('bossRoar');
-      this.arena.shake(0.015, 600);
       this.toState('idle', 1.0);
+      this.arena.onBossReady();
     }
     void dt;
   }
@@ -69,6 +69,12 @@ export abstract class Boss extends Enemy {
   }
 
   protected onPhase(_p: number) {}
+
+  /** Fala da troca de fase, definida em BOSS_DIALOGUE */
+  protected sayPhase(p: number) {
+    const line = BOSS_DIALOGUE[this.bossKey]?.phase[p];
+    if (line) this.arena.bossSay(line);
+  }
 
   die() {
     if (this.dead) return;
@@ -108,6 +114,7 @@ class BoneKing extends Boss {
     this.arena.shake(0.02, 700);
     this.arena.flash(0x7a2ab8, 0.4);
     this.arena.banner('O REI SE ENFURECE', 'Fase 2', '#c060ff');
+    this.sayPhase(2);
     this.arena.spawnEnemy('crow', 80, 120, { summoned: true });
     this.arena.spawnEnemy('crow', GAME_W - 80, 120, { summoned: true });
   }
@@ -245,6 +252,7 @@ class Seraph extends Boss {
     this.arena.shake(0.02, 700);
     this.arena.flash(0xffd75e, 0.4);
     this.arena.banner('OS OLHOS SE ABREM', 'Fase 2', '#ffd75e');
+    this.sayPhase(2);
     for (let i = 0; i < 5; i++) {
       this.arena.spawnShot({
         tex: 'holyorb', anim: 'holyorb-spin', x: this.x, y: this.y, life: 9999, radius: 4,
@@ -399,10 +407,12 @@ class FalseAngel extends Boss {
     if (p === 2) {
       this.arena.flash(0xffffff, 0.8);
       this.arena.banner('A MÁSCARA SE PARTE', 'Fase 2', '#c060ff');
+      this.sayPhase(2);
       this.play('falseangel-idle2');
     } else {
       this.arena.flash(0x7a2ab8, 0.8);
       this.arena.banner('DESESPERO', 'Fase final', '#e83b3b');
+      this.sayPhase(3);
       (this.arena as unknown as { onFinalPhase?: () => void }).onFinalPhase?.();
     }
     this.toState('idle', 1.2);

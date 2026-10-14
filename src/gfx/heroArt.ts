@@ -54,16 +54,32 @@ function drawLegs(p: Px, legs: Legs) {
   }
 }
 
+// Variante em desenho: nível da auréola (0 = rachada ... 3 = restaurada) e forma divina (pré-queda)
+const V = { halo: 0, divine: false };
+
 function drawWing(p: Px, bob: number, mode: 0 | 1 | 2) {
-  // Asa única e esfarrapada nas costas
+  if (V.divine) {
+    // par de asas íntegras, a de trás um pouco deslocada
+    drawWingShape(p, bob, mode, 3, -2, C.silverMid, C.silverDark, false);
+    drawWingShape(p, bob, mode, 0, 0, C.white, C.silverMid, false);
+    return;
+  }
+  drawWingShape(p, bob, mode, 0, 0, C.white, C.silverMid, true);
+}
+
+function drawWingShape(p: Px, bob: number, mode: 0 | 1 | 2, dx: number, dy: number, light: string, shade: string, torn: boolean) {
+  // Asa nas costas (esfarrapada quando caído)
   const rows = mode === 1 ? [2, 4, 6, 7, 7, 6, 4, 2] : mode === 2 ? [7, 7, 6, 5, 3] : [3, 5, 6, 7, 7, 6, 5, 3, 2];
-  const top = (mode === 1 ? 8 : mode === 2 ? 14 : 12) + bob;
-  const rootX = 13;
+  const top = (mode === 1 ? 8 : mode === 2 ? 14 : 12) + bob + dy;
+  const rootX = 13 + dx;
+  const big = V.divine ? 2 : 0;
   rows.forEach((w, i) => {
-    const xs = mode === 2 ? rootX - w - 2 : rootX - w;
-    p.rect(xs, top + i, w, 1, i % 3 === 2 ? C.silverMid : C.white);
-    p.px(xs, top + i, C.silverMid);
+    const ww = w + big;
+    const xs = mode === 2 ? rootX - ww - 2 : rootX - ww;
+    p.rect(xs, top + i, ww, 1, i % 3 === 2 ? shade : light);
+    p.px(xs, top + i, shade);
   });
+  if (!torn) return;
   // penas rasgadas
   const tip = top + rows.length;
   p.px(rootX - 4, tip, C.silverMid);
@@ -83,11 +99,36 @@ function drawHead(p: Px, bob: number, eyeClosed = false, lean = 0) {
   // olho brilhante
   if (eyeClosed) p.rect(hx + 4, hy + 3, 2, 1, C.skinShade);
   else { p.px(hx + 5, hy + 3, C.cyan); p.px(hx + 4, hy + 3, C.blueDark); }
-  // auréola rachada
-  p.rect(hx - 1, hy - 4, 2, 1, C.gold);
-  p.rect(hx + 1, hy - 5, 3, 1, C.gold);
-  p.px(hx + 5, hy - 5, C.goldMid);
-  p.rect(hx + 6, hy - 4, 2, 1, C.goldDark);
+  drawHalo(p, hx, hy);
+}
+
+/** Auréola: rachada no início, se recompõe a cada chefe vencido */
+function drawHalo(p: Px, hx: number, hy: number) {
+  switch (V.halo) {
+    case 0:
+      p.rect(hx - 1, hy - 4, 2, 1, C.gold);
+      p.rect(hx + 1, hy - 5, 3, 1, C.gold);
+      p.px(hx + 5, hy - 5, C.goldMid);
+      p.rect(hx + 6, hy - 4, 2, 1, C.goldDark);
+      break;
+    case 1:
+      p.rect(hx - 1, hy - 4, 2, 1, C.gold);
+      p.rect(hx + 1, hy - 5, 5, 1, C.gold);
+      p.px(hx + 4, hy - 5, C.goldDark);
+      p.rect(hx + 6, hy - 4, 2, 1, C.goldMid);
+      break;
+    case 2:
+      p.rect(hx - 1, hy - 4, 2, 1, C.gold);
+      p.rect(hx + 1, hy - 5, 5, 1, C.yellow);
+      p.rect(hx + 6, hy - 4, 2, 1, C.gold);
+      break;
+    default:
+      p.rect(hx - 1, hy - 4, 2, 1, C.yellow);
+      p.rect(hx + 1, hy - 5, 5, 1, C.white);
+      p.rect(hx + 6, hy - 4, 2, 1, C.yellow);
+      p.px(hx + 3, hy - 6, C.white);
+      break;
+  }
 }
 
 function drawBody(p: Px, bob: number, lean = 0) {
@@ -195,7 +236,20 @@ function drawDead(p: Px) {
   p.rect(27, 22, 2, 1, C.goldDark);
 }
 
+/** Texturas: 'hero' (auréola rachada), 'hero_h1', 'hero_h2', 'hero_h3' (restaurada) e 'hero_divine' (antes da queda) */
+export const HERO_VARIANTS = ['hero', 'hero_h1', 'hero_h2', 'hero_h3', 'hero_divine'];
+
 export function buildHeroArt(scene: Phaser.Scene) {
+  HERO_VARIANTS.forEach((key, i) => {
+    V.halo = Math.min(3, i);
+    V.divine = key === 'hero_divine';
+    buildHeroSheet(scene, key);
+  });
+  V.halo = 0;
+  V.divine = false;
+}
+
+function buildHeroSheet(scene: Phaser.Scene, key: string) {
   const poses: Array<Pose | 'dead'> = [
     { legs: 'stand', arm: 'idle' },
     { legs: 'stand', arm: 'idle', bob: 1 },
@@ -215,7 +269,7 @@ export function buildHeroArt(scene: Phaser.Scene) {
     'dead',
     { legs: 'stand', arm: 'spread', wing: 1 },
   ];
-  makeSheet(scene, 'hero', 32, 32, poses.map((pose) => (p: Px) => {
+  makeSheet(scene, key, 32, 32, poses.map((pose) => (p: Px) => {
     if (pose === 'dead') drawDead(p);
     else drawHero(p, pose);
   }));

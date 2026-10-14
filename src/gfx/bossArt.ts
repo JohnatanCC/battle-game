@@ -137,10 +137,19 @@ function falseAngel(p: Px, flap: number, cast: boolean, broken: boolean) {
   p.px(44, 22, broken ? C.voidLight : C.cyan); p.px(51, 22, broken ? C.voidLight : C.cyan);
   p.rect(46, 29, 4, 1, C.goldDark);
   if (broken) {
-    p.line(52, 14, 47, 33, C.black);
-    p.rect(48, 18, 5, 8, C.night);
-    p.circle(50, 22, 2, C.red);
-    p.rect(44, 25, 1, 6, C.void); p.rect(53, 26, 1, 8, C.void);
+    // metade da máscara caiu: por baixo, o rosto do próprio herói
+    p.rect(48, 15, 8, 18, C.skin);
+    p.rect(48, 29, 8, 2, C.skinShade);
+    p.rect(48, 12, 10, 5, C.silver);
+    p.rect(55, 15, 3, 13, C.silverMid);
+    p.rect(50, 21, 2, 1, C.blueDark);
+    p.px(52, 21, C.cyan);
+    p.rect(50, 26, 3, 1, C.skinShade);
+    // borda rachada da máscara e lágrimas negras
+    p.line(48, 13, 47, 33, C.black);
+    for (let y = 15; y < 33; y += 3) p.px(48, y, C.goldDark);
+    p.rect(51, 23, 1, 7, C.void);
+    p.rect(44, 25, 1, 6, C.void);
   }
   // braços
   if (cast) {

@@ -195,6 +195,91 @@ function titleBg(p: Px) {
   }
 }
 
+// ---------------- CINEMÁTICA: SALÃO CELESTE DO TRONO ----------------
+export const HEAVEN_FLOOR = 276;
+export const HEAVEN_EDGE = 150;
+
+function heaven(p: Px) {
+  const r = rng(44);
+  gradient(p, [C.violet, C.violetLight, C.lilac, '#c8b8ec', '#f0dcc0', '#ffe9a0'], 0, H);
+  stars(p, r, 30, 60, [C.white, C.gold]);
+  // feixes de luz vindos do alto, sobre o trono
+  for (let y = 0; y < HEAVEN_FLOOR; y++) {
+    const w = 14 + y * 0.3;
+    p.sparse(540 - w, y, w * 2, 1, '#fff4d0');
+  }
+  // nuvens distantes lá embaixo (o abismo começa à esquerda)
+  for (let i = 0; i < 10; i++) {
+    const cx = Math.floor(r() * 220), cy = 290 + Math.floor(r() * 60), cw = 20 + Math.floor(r() * 30);
+    p.ellipse(cx, cy, cw, 4, C.lilac);
+    p.ellipse(cx + 5, cy - 2, Math.round(cw * 0.5), 3, C.marbleMid);
+  }
+  // nuvens altas
+  for (let i = 0; i < 8; i++) {
+    const cx = Math.floor(r() * W), cy = 50 + Math.floor(r() * 90), cw = 24 + Math.floor(r() * 40);
+    p.ellipse(cx, cy, cw, 4, '#f4ecff');
+    p.rect(cx - cw, cy + 2, cw * 2, 2, C.lilac);
+  }
+  // colunas do salão
+  for (const cx of [250, 370, 610]) {
+    p.rect(cx - 8, 60, 16, HEAVEN_FLOOR - 60, C.marble);
+    p.rect(cx - 8, 60, 4, HEAVEN_FLOOR - 60, C.marbleMid);
+    p.rect(cx + 5, 60, 3, HEAVEN_FLOOR - 60, C.marbleDark);
+    p.rect(cx - 12, 52, 24, 8, C.gold);
+    p.rect(cx - 12, 52, 24, 2, C.yellow);
+  }
+  // plataforma de nuvens com piso de mármore
+  for (let x = HEAVEN_EDGE - 10; x < W; x += 14) {
+    const cy = HEAVEN_FLOOR + 14 + Math.round(Math.sin(x * 0.2) * 3);
+    p.ellipse(x, cy, 16, 12, C.white);
+    p.ellipse(x + 4, cy + 8, 14, 8, C.marbleMid);
+  }
+  p.rect(HEAVEN_EDGE, H - 30, W - HEAVEN_EDGE, 30, C.marbleMid);
+  p.rect(HEAVEN_EDGE + 10, HEAVEN_FLOOR, W - HEAVEN_EDGE - 10, 8, C.marble);
+  p.rect(HEAVEN_EDGE + 10, HEAVEN_FLOOR, W - HEAVEN_EDGE - 10, 2, C.gold);
+  for (let x = HEAVEN_EDGE + 14; x < W; x += 16) p.rect(x, HEAVEN_FLOOR + 3, 1, 5, C.marbleMid);
+  // o trono: degraus, encosto alto e gema
+  const tx = 540;
+  p.rect(tx - 50, HEAVEN_FLOOR - 8, 100, 8, C.goldMid);
+  p.rect(tx - 40, HEAVEN_FLOOR - 16, 80, 8, C.gold);
+  p.rect(tx - 26, HEAVEN_FLOOR - 56, 52, 40, C.gold);
+  p.rect(tx - 26, HEAVEN_FLOOR - 56, 8, 40, C.goldMid);
+  p.rect(tx - 18, HEAVEN_FLOOR - 120, 36, 66, C.gold);
+  p.rect(tx - 18, HEAVEN_FLOOR - 120, 6, 66, C.goldMid);
+  p.rect(tx - 12, HEAVEN_FLOOR - 110, 24, 50, C.redMid);
+  p.rect(tx - 12, HEAVEN_FLOOR - 110, 24, 3, C.red);
+  for (let i = 0; i < 5; i++) p.rect(tx - 20 + i * 9, HEAVEN_FLOOR - 130 - (i % 2) * 6, 4, 12, C.yellow);
+  p.circle(tx, HEAVEN_FLOOR - 136, 5, C.white);
+  p.circle(tx, HEAVEN_FLOOR - 136, 3, C.cyan);
+}
+
+// ---------------- CINEMÁTICA: A QUEDA (640 x 1080) ----------------
+export const FALL_H = 1080;
+
+function fallShaft(p: Px) {
+  const r = rng(55);
+  gradient(p, ['#ffe9a0', '#f0dcc0', C.lilac, C.violetLight, C.violet, C.deep, C.night, C.night, C.black, C.black], 0, FALL_H);
+  // nuvens que ficam para trás
+  for (let i = 0; i < 26; i++) {
+    const cy = Math.floor(r() * 380), cx = Math.floor(r() * W), cw = 30 + Math.floor(r() * 60);
+    p.ellipse(cx, cy, cw, 5, i % 2 ? C.white : '#f4ecff');
+    p.rect(cx - cw, cy + 3, cw * 2, 2, C.lilac);
+  }
+  for (let i = 0; i < 120; i++) p.px(Math.floor(r() * W), 380 + Math.floor(r() * 400), i % 3 ? C.lilac : C.white);
+  // paredes do abismo se fechando
+  for (let y = 560; y < FALL_H; y++) {
+    const k = (y - 560) / (FALL_H - 560);
+    const wl = Math.round(k * k * 220 + Math.sin(y * 0.05) * 10 + Math.sin(y * 0.13) * 6);
+    const wr = Math.round(k * k * 220 + Math.sin(y * 0.07 + 2) * 10 + Math.sin(y * 0.17) * 6);
+    if (wl > 0) p.rect(0, y, wl, 1, y % 7 === 0 ? C.stoneDark : C.black);
+    if (wr > 0) p.rect(W - wr, y, wr, 1, y % 9 === 0 ? C.stoneDark : C.black);
+    if (wl > 2) p.px(wl - 1, y, C.night);
+    if (wr > 2) p.px(W - wr, y, C.night);
+  }
+  // ossos e brasas violetas no fundo
+  for (let i = 0; i < 40; i++) p.px(Math.floor(r() * W), 900 + Math.floor(r() * 170), i % 2 ? C.void : C.boneDark);
+}
+
 // ---------------- TILES ----------------
 function tiles1(p: Px, kind: number) {
   if (kind === 0) {
@@ -254,6 +339,8 @@ export function buildBackgrounds(scene: Phaser.Scene) {
   makeTex(scene, 'bg2', W, H, atrium);
   makeTex(scene, 'bg3', W, H, throne);
   makeTex(scene, 'titlebg', W, H, titleBg);
+  makeTex(scene, 'heaven', W, H, heaven);
+  makeTex(scene, 'fallbg', W, FALL_H, fallShaft);
   const sets: Array<[string, (p: Px, k: number) => void]> = [['tiles1', tiles1], ['tiles2', tiles2], ['tiles3', tiles3]];
   for (const [key, fn] of sets) {
     makeSheet(scene, key, 16, 16, [0, 1, 2].map((k) => (p: Px) => fn(p, k)), null);

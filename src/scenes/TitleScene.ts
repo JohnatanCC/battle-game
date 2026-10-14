@@ -39,13 +39,14 @@ export class TitleScene extends Phaser.Scene {
     this.tweens.add({ targets: title, y: 66, duration: 1600, yoyo: true, repeat: -1, ease: 'Sine.InOut' });
 
     // herói olhando para o trono
-    const hero = this.add.sprite(GAME_W / 2, GAME_H - 52, 'hero', 0).setScale(2).play('hero-idle');
+    const skin = Save.heroTexture();
+    const hero = this.add.sprite(GAME_W / 2, GAME_H - 52, skin, 0).setScale(2).play(`${skin}-idle`);
     const glow = this.add.image(hero.x, hero.y - 30, 'glow').setScale(2).setTint(0xffd75e).setAlpha(0.4);
     this.tweens.add({ targets: glow, alpha: 0.1, duration: 1200, yoyo: true, repeat: -1 });
 
     const has = Save.hasGame();
     this.menu = new Menu(this, GAME_W / 2 - 64, 160, [
-      { label: 'Continuar', disabled: !has, onSelect: () => goTo(this, 'Map') },
+      { label: 'Continuar', disabled: !has, onSelect: () => this.continueGame() },
       { label: 'Novo jogo', onSelect: () => (has ? this.confirmNew() : this.startNew()) },
       { label: 'Controles', onSelect: () => this.showControls() },
       { label: 'Opções', onSelect: () => this.showOptions() },
@@ -56,7 +57,13 @@ export class TitleScene extends Phaser.Scene {
 
   private startNew() {
     Save.newGame();
-    goTo(this, 'Story');
+    goTo(this, 'Prologue', {}, 800);
+  }
+
+  private continueGame() {
+    // quem ainda não passou do prólogo volta para ele
+    if (!Save.data.tutorialDone && Save.data.cleared.length === 0) goTo(this, 'Arena', { levelId: 'prologue' });
+    else goTo(this, 'Map');
   }
 
   private closeSub() {

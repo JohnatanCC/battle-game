@@ -161,7 +161,7 @@ export abstract class Enemy extends Phaser.Physics.Arcade.Sprite {
   preUpdate(time: number, delta: number) {
     if (this.arena.frozen) return;
     super.preUpdate(time, delta);
-    if (this.dead) return;
+    if (this.dead || this.arena.cutscene) return;
     const dt = Math.min(0.05, delta / 1000);
 
     if (this.spawning > 0) {

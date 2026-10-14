@@ -7,20 +7,20 @@ import { Save } from '../state/Save';
 import { Music } from '../audio/Music';
 import { Sfx } from '../audio/Sfx';
 
+// Depois da cinemática de abertura: o propósito da jornada
 export const INTRO_PAGES = [
-  'Antes do tempo, tu eras a Chama do Trono,\no primeiro entre os que guardam os céus.',
-  'Mas um dos teus, um anjo de rosto dourado,\nsussurrou mentiras aos ouvidos do reino.',
-  'Tua coroa foi partida. Tuas asas, arrancadas.\nE foste lançado às profundezas.',
-  'Despertas agora entre ossos e corvos.\nAinda resta uma faísca de divindade em ti.',
-  'Recolhe teus amuletos. Recupera teu poder.\nSobe, mundo após mundo...',
-  '...e derruba o Falso Anjo\nque se senta no teu trono.',
+  'Tudo o que eras foi partido em fragmentos\ne entregue aos que te julgaram.',
+  'Cada amuleto que recuperares\né um pedaço do teu antigo poder.',
+  'Cada vitória, uma prova\nde que ainda és digno da luz.',
+  'Sobe, mundo após mundo.\nRetoma o que é teu...',
+  '...e mostra aos céus\nque a queda não foi o teu fim.',
 ];
 
 export const ENDING_PAGES = [
-  'A máscara dourada se desfaz em cinzas.\nO usurpador cai do alto do trono.',
-  'Os céus silenciam. Os anjos que te julgaram\nbaixam suas lanças.',
-  'Tua auréola se refaz, ainda rachada,\nmas brilhando como nunca.',
-  'Tu, que foste lançado ao abismo,\nsubiste cada degrau com as próprias mãos.',
+  'A máscara se desfaz em cinzas. Por baixo dela,\nteu próprio rosto: o orgulho que deixaste no trono.',
+  'Os céus silenciam. Os anjos que te julgaram\nbaixam suas lanças, um a um.',
+  'Tua auréola se refaz por inteiro\ne brilha como nunca brilhou.',
+  'Não por herança. Não por decreto.\nDesta vez, tu provaste o teu valor.',
   'O trono é teu outra vez.\nQue os céus se lembrem do preço da queda.',
 ];
 
@@ -33,13 +33,15 @@ export class StoryScene extends Phaser.Scene {
   body!: Phaser.GameObjects.Text;
   hint!: Phaser.GameObjects.Text;
   next = 'Map';
+  nextData: object = {};
   acc = 0;
 
   constructor(key = 'Story') { super(key); }
 
-  init(data: { pages?: string[]; next?: string }) {
+  init(data: { pages?: string[]; next?: string; nextData?: object }) {
     this.pages = data.pages ?? INTRO_PAGES;
     this.next = data.next ?? 'Map';
+    this.nextData = data.nextData ?? {};
     this.page = 0;
     this.shown = 0;
     this.acc = 0;
@@ -76,7 +78,7 @@ export class StoryScene extends Phaser.Scene {
   }
 
   private finish() {
-    if (this.next === 'Map') { Save.data.introSeen = true; Save.persist(); }
-    goTo(this, this.next, {}, 700);
+    if (this.pages === INTRO_PAGES) { Save.data.introSeen = true; Save.persist(); }
+    goTo(this, this.next, this.nextData, 700);
   }
 }
