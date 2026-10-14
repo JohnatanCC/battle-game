@@ -3,14 +3,16 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Angel Knight</title>
-    <meta name="description" content="Jogo de ação e combate onde um guerreiro celestial e uma feiticeira do vazio enfrentam hordas demoníacas e o anjo caído." />
-    <meta property="og:title" content="Angel Knight" />
-    <meta property="og:description" content="Jogo de ação e combate onde um guerreiro celestial e uma feiticeira do vazio enfrentam hordas demoníacas e o anjo caído." />
+    <title>Trono Caído</title>
+    <meta name="description" content="Arena 16-bit: um ser divino exilado ascende das profundezas para reconquistar seu trono." />
+    <style>
+      html, body { margin: 0; padding: 0; width: 100%; height: 100%; background: #0b0814; overflow: hidden; }
+      #game { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+      canvas { image-rendering: pixelated; image-rendering: crisp-edges; }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
+    <div id="game"></div>
+    <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
-
