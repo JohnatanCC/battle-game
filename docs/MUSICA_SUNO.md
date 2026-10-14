@@ -41,9 +41,9 @@ mas todas as faixas compartilham a mesma base para soar como uma trilha única:
 | `boss3.mp3` | O Falso Anjo (fases 1–2) | 150 | Chefe final grandioso |
 | `boss3_final.mp3` | O Falso Anjo (fase final) | 170 | Desespero apocalíptico |
 | `story.mp3` | Introdução (história) | 65 | Simples: caixinha de música, solene |
-| `map.mp3` | Seleção de fase (mapa) | 90 | Simples: jornada leve |
+| — | Seleção de fase (mapa) | — | Sem música: vento, zumbido grave e sinos (sintetizados em `src/audio/Ambience.ts`) |
 | `build.mp3` | Escolher amuletos (Build) | 80 | Simples: místico, aconchegante |
-| `reward.mp3` | Vitória e escolha de cartas | 72 | Simples: santuário, descanso |
+| — | Vitória e escolha de cartas | — | Sem música: acorde de santuário e sinos de cristal (sintetizados) |
 | `ending.mp3` | Créditos | 85 | Opcional (sem ela toca o menu) |
 
 ---

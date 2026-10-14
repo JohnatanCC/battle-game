@@ -48,7 +48,7 @@ function write(key: string, value: unknown) {
 
 class SaveStore {
   data: SaveData = fresh();
-  settings: Settings = { music: 0.6, sfx: 0.7, shake: true };
+  settings: Settings = { music: 0.5, sfx: 0.7, shake: true };
 
   load() {
     const s = read<SaveData>(SAVE_KEY);

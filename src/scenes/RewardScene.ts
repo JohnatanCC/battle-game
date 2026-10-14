@@ -64,7 +64,7 @@ export class RewardScene extends Phaser.Scene {
     setBackdrop(this, 'titlebg');
     this.controls = new Controls(this);
     this.controls.swallow();
-    Music.play('reward');
+    Music.ambient('reward');
     this.add.image(0, 0, 'titlebg').setOrigin(0).setAlpha(0.4);
     this.add.rectangle(0, 0, GAME_W, GAME_H, 0x0b0814, 0.55).setOrigin(0);
     this.add.particles(0, 0, 'px', {

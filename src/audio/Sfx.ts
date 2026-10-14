@@ -38,6 +38,11 @@ class SfxEngine {
 
   unlock() { this.ensure(); }
 
+  /** Contexto de áudio compartilhado (usado também pelos sons ambientes) */
+  context() { return this.ensure(); }
+
+  noise() { this.ensure(); return this.noiseBuf!; }
+
   setVolume(v: number) {
     this.volume = v;
     if (this.master) this.master.gain.value = v * 0.5;

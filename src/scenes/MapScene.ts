@@ -33,7 +33,7 @@ export class MapScene extends Phaser.Scene {
     setBackdrop(this, WORLDS[LEVEL_BY_ID[Save.nextLevel()].world - 1].bg);
     this.controls = new Controls(this);
     this.controls.swallow();
-    Music.play('map');
+    Music.ambient('map');
     this.info = [];
     this.nodes = [];
 

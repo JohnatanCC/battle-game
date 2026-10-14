@@ -1,18 +1,16 @@
-// Gerenciador de música. Cada faixa procura primeiro o arquivo definitivo (feito no Suno)
-// em public/music/<id>.mp3; faixas opcionais que faltarem usam a mais próxima (ex.: mapa usa o menu).
+// Gerenciador de música. Cada faixa toca o arquivo feito no Suno em public/music/<id>.mp3;
+// se não existir, usa a faixa mais próxima. Mapa e recompensa usam som ambiente (Ambience).
+import { Ambience, type AmbienceId } from './Ambience';
 
 export type TrackId =
-  | 'menu' | 'story' | 'map'
+  | 'menu' | 'story' | 'build' | 'ending'
   | 'world1' | 'world2' | 'world3'
-  | 'boss1' | 'boss2' | 'boss3' | 'boss3_final'
-  | 'build' | 'reward' | 'ending';
+  | 'boss1' | 'boss2' | 'boss3' | 'boss3_final';
 
 const FALLBACK: Record<TrackId, string> = {
   menu: 'music/menu.mp3',
   story: 'music/menu.mp3',
-  map: 'music/menu.mp3',
   build: 'music/menu.mp3',
-  reward: 'music/menu.mp3',
   ending: 'music/menu.mp3',
   world1: 'music/world1.mp3',
   world2: 'music/world1.mp3',
@@ -23,18 +21,31 @@ const FALLBACK: Record<TrackId, string> = {
   boss3_final: 'music/boss1.mp3',
 };
 
+// Mixagem: durante as batalhas a música fica mais baixa para os efeitos sonoros aparecerem
+const TRACK_GAIN: Record<TrackId, number> = {
+  menu: 0.8, story: 0.8, build: 0.7, ending: 0.85,
+  world1: 0.45, world2: 0.45, world3: 0.42,
+  boss1: 0.5, boss2: 0.5, boss3: 0.5, boss3_final: 0.5,
+};
+
 class MusicPlayer {
   volume = 0.6;
   current: HTMLAudioElement | null = null;
   currentId: TrackId | null = null;
   private fades = new Map<HTMLAudioElement, number>();
 
+  private target() {
+    return this.currentId ? this.volume * TRACK_GAIN[this.currentId] : 0;
+  }
+
   setVolume(v: number) {
     this.volume = v;
-    if (this.current && !this.fades.has(this.current)) this.current.volume = v;
+    Ambience.setVolume(v);
+    if (this.current && !this.fades.has(this.current)) this.current.volume = this.target();
   }
 
   play(id: TrackId, fadeMs = 800) {
+    Ambience.stop();
     if (this.currentId === id && this.current) {
       if (this.current.paused) this.current.play().catch(() => {});
       return;
@@ -56,7 +67,14 @@ class MusicPlayer {
     this.current = audio;
     this.currentId = id;
     audio.play().catch(() => { /* aguardando interação do usuário */ });
-    this.fade(audio, this.volume, fadeMs);
+    this.fade(audio, this.target(), fadeMs);
+  }
+
+  /** Troca a música por um som ambiente sintetizado */
+  ambient(kind: AmbienceId) {
+    this.stop(700);
+    Ambience.setVolume(this.volume);
+    Ambience.start(kind);
   }
 
   /** Tenta retomar após a primeira interação (política de autoplay) */
@@ -72,7 +90,7 @@ class MusicPlayer {
   }
 
   duck(on: boolean) {
-    if (this.current) this.fade(this.current, on ? this.volume * 0.35 : this.volume, 250);
+    if (this.current) this.fade(this.current, on ? this.target() * 0.35 : this.target(), 250);
   }
 
   private fade(a: HTMLAudioElement, to: number, ms: number, done?: () => void) {
