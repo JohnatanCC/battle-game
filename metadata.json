@@ -1,0 +1,6 @@
+{
+  "name": "Angel Knight",
+  "description": "Jogo de ação e combate onde um guerreiro celestial e uma feiticeira do vazio enfrentam hordas demoníacas e o anjo caído.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
