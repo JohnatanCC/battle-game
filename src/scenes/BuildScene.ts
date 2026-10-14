@@ -4,6 +4,7 @@ import { txt, panel, fadeIn, goTo } from '../ui/ui';
 import { setBackdrop } from '../ui/backdrop';
 import { Controls } from '../systems/Controls';
 import { Save } from '../state/Save';
+import { Music } from '../audio/Music';
 import { computeStats } from '../state/Stats';
 import { Sfx } from '../audio/Sfx';
 import { AMULETS, AMULET_BY_ID, COLOR_FRAME, COLOR_NAME, COLOR_HEX } from '../data/amulets';
@@ -30,6 +31,7 @@ export class BuildScene extends Phaser.Scene {
   create() {
     fadeIn(this);
     setBackdrop(this, 'titlebg');
+    Music.play('build');
     this.controls = new Controls(this);
     this.controls.swallow();
     this.add.rectangle(0, 0, GAME_W, GAME_H, 0x140c1c).setOrigin(0);

@@ -40,7 +40,11 @@ mas todas as faixas compartilham a mesma base para soar como uma trilha única:
 | `boss2.mp3` | Serafim Guardião | 160 | Épico angelical |
 | `boss3.mp3` | O Falso Anjo (fases 1–2) | 150 | Chefe final grandioso |
 | `boss3_final.mp3` | O Falso Anjo (fase final) | 170 | Desespero apocalíptico |
-| `map.mp3`, `story.mp3`, `reward.mp3`, `ending.mp3` | Mapa, história, recompensa, créditos | — | Opcionais: sem elas toca o placeholder |
+| `story.mp3` | Introdução (história) | 65 | Simples: caixinha de música, solene |
+| `map.mp3` | Seleção de fase (mapa) | 90 | Simples: jornada leve |
+| `build.mp3` | Escolher amuletos (Build) | 80 | Simples: místico, aconchegante |
+| `reward.mp3` | Vitória e escolha de cartas | 72 | Simples: santuário, descanso |
+| `ending.mp3` | Créditos | 85 | Opcional (sem ela toca o menu) |
 
 ---
 
@@ -95,15 +99,41 @@ mas todas as faixas compartilham a mesma base para soar como uma trilha única:
 
 ---
 
-## Opcionais
+## Telas de descanso (músicas simples)
 
-**map.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG world map theme, 95 bpm, hopeful ascension, pizzicato strings, harp, gentle brass melody, angelic synth choir, soft march snare, loopable`
+Essas telas ficam entre as batalhas, então as faixas devem ser **leves, com poucos
+instrumentos e sem bateria pesada**, para dar respiro e não cansar. Use estes extras no
+*Exclude Styles*:
+```
+lead vocals, lyrics, heavy drums, electric guitar, epic orchestra, brass fanfare, EDM
+```
 
-**story.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG story cue, 70 bpm, solemn and sorrowful, music box, harp, low strings, distant angelic choir, cathedral reverb, loopable`
+**story.mp3 — Introdução**
+```
+16-bit SNES soundtrack, retro JRPG story cue, 65 bpm, minimal and solemn, solo music box melody, soft harp, faint angelic synth choir pad, no drums, sparse, gentle reverb, loopable
+```
 
-**reward.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG sanctuary theme, 70 bpm, peaceful and holy, harp, music box, warm angelic choir pads, gentle bells, loopable`
+**map.mp3 — Seleção de fase**
+```
+16-bit SNES soundtrack, retro JRPG world map theme, 90 bpm, simple and light, plucked harp ostinato, soft flute melody, light hand percussion, hopeful journey, minimal arrangement, loopable
+```
 
-**ending.mp3** — `16-bit SNES orchestral ending credits, retro JRPG, 85 bpm, triumphant and emotional, full orchestra, angelic choir swell, main theme reprise, harp, bells, bittersweet heroic finale`
+**build.mp3 — Escolher amuletos**
+```
+16-bit SNES soundtrack, retro JRPG item shop theme, 80 bpm, calm and mystical, celesta and glockenspiel melody, soft pizzicato bass, warm pad, minimal, cozy sanctuary, loopable
+```
+
+**reward.mp3 — Vitória e escolha de cartas**
+```
+16-bit SNES soundtrack, retro JRPG save room theme, 72 bpm, serene and holy, solo harp arpeggios, crystal bells, soft angelic synth choir pad, very minimal, peaceful rest after battle, loopable
+```
+
+**ending.mp3 — Créditos (opcional)**
+```
+16-bit SNES orchestral ending credits, retro JRPG, 85 bpm, triumphant and emotional, full orchestra, angelic choir swell, main theme reprise, harp, bells, bittersweet heroic finale
+```
+
+Dica: faixas de 1 a 2 minutos bastam nessas telas, porque o jogador passa pouco tempo nelas.
 
 ## Efeitos sonoros
 

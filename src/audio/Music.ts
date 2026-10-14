@@ -5,12 +5,13 @@ export type TrackId =
   | 'menu' | 'story' | 'map'
   | 'world1' | 'world2' | 'world3'
   | 'boss1' | 'boss2' | 'boss3' | 'boss3_final'
-  | 'reward' | 'ending';
+  | 'build' | 'reward' | 'ending';
 
 const FALLBACK: Record<TrackId, string> = {
   menu: 'music/menu.mp3',
   story: 'music/menu.mp3',
   map: 'music/menu.mp3',
+  build: 'music/menu.mp3',
   reward: 'music/menu.mp3',
   ending: 'music/menu.mp3',
   world1: 'music/world1.mp3',
