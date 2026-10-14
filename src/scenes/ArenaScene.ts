@@ -14,6 +14,7 @@ import { LEVEL_BY_ID, WORLDS, BOSS_NAMES } from '../data/worlds';
 import type { EnemyType, LevelDef, WorldDef } from '../data/types';
 import { Hud } from '../ui/Hud';
 import { txt, panel, Menu, dim, fadeIn, goTo } from '../ui/ui';
+import { setBackdrop } from '../ui/backdrop';
 import { Sfx } from '../audio/Sfx';
 import { Music } from '../audio/Music';
 import { AMULET_BY_ID, COLOR_FRAME } from '../data/amulets';
@@ -76,6 +77,7 @@ export class ArenaScene extends Phaser.Scene implements ArenaApi {
 
   create() {
     fadeIn(this);
+    setBackdrop(this, this.worldDef.bg);
     this.stats = computeStats();
     this.controls = new Controls(this);
     this.controls.swallow();

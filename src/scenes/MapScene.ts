@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_W, GAME_H } from '../config';
 import { txt, panel, fadeIn, goTo } from '../ui/ui';
+import { setBackdrop } from '../ui/backdrop';
 import { Controls } from '../systems/Controls';
 import { Save } from '../state/Save';
 import { Music } from '../audio/Music';
@@ -29,6 +30,7 @@ export class MapScene extends Phaser.Scene {
 
   create() {
     fadeIn(this);
+    setBackdrop(this, WORLDS[LEVEL_BY_ID[Save.nextLevel()].world - 1].bg);
     this.controls = new Controls(this);
     this.controls.swallow();
     Music.play('map');

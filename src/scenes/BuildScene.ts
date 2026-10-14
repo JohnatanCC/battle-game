@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_W, GAME_H } from '../config';
 import { txt, panel, fadeIn, goTo } from '../ui/ui';
+import { setBackdrop } from '../ui/backdrop';
 import { Controls } from '../systems/Controls';
 import { Save } from '../state/Save';
 import { computeStats } from '../state/Stats';
@@ -28,6 +29,7 @@ export class BuildScene extends Phaser.Scene {
 
   create() {
     fadeIn(this);
+    setBackdrop(this, 'titlebg');
     this.controls = new Controls(this);
     this.controls.swallow();
     this.add.rectangle(0, 0, GAME_W, GAME_H, 0x140c1c).setOrigin(0);

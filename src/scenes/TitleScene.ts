@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { GAME_W, GAME_H } from '../config';
 import { txt, panel, Menu, fadeIn, goTo, dim } from '../ui/ui';
+import { setBackdrop } from '../ui/backdrop';
 import { Controls, CONTROL_HELP } from '../systems/Controls';
 import { Save } from '../state/Save';
 import { Music } from '../audio/Music';
@@ -16,6 +17,7 @@ export class TitleScene extends Phaser.Scene {
 
   create() {
     fadeIn(this, 600);
+    setBackdrop(this, 'titlebg');
     this.controls = new Controls(this);
     this.controls.swallow();
     this.sub = null;
