@@ -4,95 +4,106 @@ O jogo procura cada faixa em `public/music/<arquivo>.mp3`. Enquanto o arquivo n�
 ele toca um placeholder (as músicas antigas do projeto). Basta gerar no Suno, baixar em MP3,
 renomear exatamente como abaixo e jogar na pasta `public/music/`. Não precisa mudar código.
 
-## Dicas gerais
+## Identidade sonora
 
-- Ative **Instrumental** em todas as faixas.
-- Todas tocam em **loop**. No Suno, use *Extend* até ~2–3 min e prefira trechos que terminem
-  parecidos com o começo. Se precisar, corte o final num editor (Audacity) para o loop fechar.
-- Para manter a identidade 16-bit, todo prompt usa a mesma base:
-  `16-bit SNES soundtrack, retro JRPG, chiptune instrumentation`.
-- Gere 2–4 variações por faixa e escolha a que tiver a melodia mais marcante.
-- **Licença:** confira os termos atuais do Suno. Em geral, faixas geradas em plano gratuito
-  são só para uso não comercial; para vender o jogo, gere num plano pago.
+**Retrô 16-bit + angelical + orquestral.** É o som de uma trilha de SNES (soundfont de
+orquestra, reverb de catedral) com coral angelical, harpa, sinos e órgão. Cada mundo varia o clima,
+mas todas as faixas compartilham a mesma base para soar como uma trilha única:
+
+```
+16-bit SNES orchestral soundtrack, retro JRPG, angelic synth choir, harp, celestial bells, cathedral reverb
+```
+
+## Como usar no Suno
+
+1. Use o modo **Custom** e ligue **Instrumental**.
+2. Cole o prompt da faixa no campo **Style of Music**.
+3. No campo **Exclude Styles** (se disponível), cole:
+   ```
+   lead vocals, lyrics, rap, EDM, dubstep, trap, modern pop, electric guitar, autotune
+   ```
+4. Gere 2–4 variações e escolha a de melodia mais marcante. Use *Extend* até ~2–3 min.
+5. Todas tocam em **loop**: prefira trechos cujo final lembre o começo. Se precisar, corte num
+   editor (Audacity) para o loop fechar.
+6. **Licença:** confira os termos atuais do Suno. Em geral, faixas do plano gratuito são só para
+   uso não comercial; para vender o jogo, gere num plano pago.
 
 ## Faixas
 
 | Arquivo | Onde toca | BPM | Clima |
 |---|---|---|---|
-| `menu.mp3` | Título | 80 | Melancólico e heroico |
-| `story.mp3` | Introdução | 70 | Narrativo, solene (opcional: cai no `menu`) |
-| `map.mp3` | Mapa da ascensão | 95 | Jornada, esperança |
-| `world1.mp3` | Mundo 1 — O Ossuário | 120 | Gótico, sombrio |
-| `world2.mp3` | Mundo 2 — Os Átrios Dourados | 130 | Celestial, majestoso e hostil |
-| `world3.mp3` | Mundo 3 — O Trono Usurpado | 140 | Catedral corrompida |
-| `boss1.mp3` | Rei Ossário | 150 | Chefe gótico |
+| `menu.mp3` | Título | 80 | Majestoso e melancólico |
+| `world1.mp3` | Fases do Mundo 1 — O Ossuário | 125 | Sagrado no abismo, sombrio e heroico |
+| `world2.mp3` | Fases do Mundo 2 — Os Átrios Dourados | 135 | Celestial radiante, majestoso e hostil |
+| `world3.mp3` | Fases do Mundo 3 — O Trono Usurpado | 145 | Sagrado corrompido, tenso |
+| `boss1.mp3` | Rei Ossário | 150 | Chefe sombrio e solene |
 | `boss2.mp3` | Serafim Guardião | 160 | Épico angelical |
-| `boss3.mp3` | O Falso Anjo (fases 1–2) | 150 | Chefe final épico |
-| `boss3_final.mp3` | O Falso Anjo (fase final) | 170 | Desespero, caos |
-| `reward.mp3` | Vitória e escolha de cartas | 70 | Santuário, calma |
-| `ending.mp3` | Final e créditos | 85 | Triunfo emocional |
+| `boss3.mp3` | O Falso Anjo (fases 1–2) | 150 | Chefe final grandioso |
+| `boss3_final.mp3` | O Falso Anjo (fase final) | 170 | Desespero apocalíptico |
+| `map.mp3`, `story.mp3`, `reward.mp3`, `ending.mp3` | Mapa, história, recompensa, créditos | — | Opcionais: sem elas toca o placeholder |
 
-## Prompts (campo *Style of Music*)
+---
+
+## Menu
 
 **menu.mp3 — "Tema do Trono Caído"**
 ```
-16-bit SNES soundtrack, retro JRPG, chiptune instrumentation, melancholic heroic main theme, slow 80 bpm, warm synth choir pads, harp arpeggios, lonely flute melody, soft timpani, fallen angel, nostalgic, loopable
+16-bit SNES orchestral soundtrack, retro JRPG main title theme, 80 bpm, majestic and melancholic, angelic synth choir pads, harp arpeggios, soft strings, solo flute melody, celestial bells, gentle timpani, cathedral reverb, fallen angel, nostalgic, loopable
 ```
 
-**story.mp3 — "A Queda"**
+## Fases de batalha
+
+**world1.mp3 — "O Ossuário" (luz divina no abismo)**
 ```
-16-bit SNES soundtrack, retro JRPG, chiptune instrumentation, solemn storytelling cue, 70 bpm, music box and harp, low strings, distant choir, sorrowful, cinematic, loopable
+16-bit SNES orchestral soundtrack, retro JRPG battle theme, 125 bpm, minor key, dark sacred atmosphere, pipe organ, pizzicato strings, low angelic choir, harp runs, celestial bells, driving snare and timpani, heroic rising melody, cathedral reverb, loopable
 ```
 
-**map.mp3 — "A Ascensão"**
+**world2.mp3 — "Os Átrios Dourados" (o céu que te julgou)**
 ```
-16-bit SNES soundtrack, retro JRPG, chiptune instrumentation, world map theme, 95 bpm, adventurous and hopeful, pizzicato strings, harp, gentle brass melody, steady march snare, loopable
-```
-
-**world1.mp3 — "O Ossuário"**
-```
-16-bit SNES soundtrack, gothic castlevania style, chiptune instrumentation, dark dungeon action theme, 120 bpm, pipe organ, harpsichord riffs, pizzicato bass, driving drums, crows, eerie and energetic, loopable
+16-bit SNES orchestral soundtrack, retro JRPG battle theme, 135 bpm, radiant heavenly palace, bright brass fanfares, soaring strings, angelic soprano synth choir, harp glissandos, glockenspiel, celestial bells, marching percussion, majestic yet hostile, loopable
 ```
 
-**world2.mp3 — "Os Átrios Dourados"**
+**world3.mp3 — "O Trono Usurpado" (o sagrado corrompido)**
+
+> Mundo 3 usa **rock/metal sombrio**. Nas faixas do Mundo 3, tire `electric guitar` do *Exclude Styles*.
+
 ```
-16-bit SNES soundtrack, retro JRPG, chiptune instrumentation, heavenly palace battle theme, 130 bpm, bright brass fanfares, harp glissandos, angelic synth choir, majestic but hostile, golden, loopable
+16-bit retro symphonic metal, SNES soundfont, dark gothic battle theme, 145 bpm, minor key, distorted electric guitar riffs, palm-muted chugs, driving double bass drums, cathedral pipe organ, dark angelic choir, string ostinato, tolling bells, ominous and aggressive, loopable
 ```
 
-**world3.mp3 — "O Trono Usurpado"**
-```
-16-bit SNES soundtrack, dark gothic, chiptune instrumentation, corrupted cathedral battle theme, 140 bpm, distorted pipe organ, dissonant choir, heavy drums, tense strings, ominous, loopable
-```
+## Chefes
 
 **boss1.mp3 — "Rei Ossário"**
 ```
-16-bit SNES boss battle music, gothic castlevania style, chiptune instrumentation, 150 bpm, aggressive pipe organ, fast harpsichord arpeggios, pounding drums, skeleton king, menacing, loopable
+16-bit SNES orchestral boss battle, retro JRPG, 150 bpm, minor key, aggressive pipe organ riff, fast string ostinato, chanting angelic choir, brass hits, pounding timpani, tolling church bells, dark and solemn, intense, loopable
 ```
 
-**boss2.mp3 — "O Carcereiro dos Céus"**
+**boss2.mp3 — "Serafim Guardião"**
 ```
-16-bit SNES boss battle music, epic orchestral JRPG, chiptune instrumentation, 160 bpm, triumphant trumpets, angelic choir, fast strings ostinato, timpani rolls, seraph guardian, grand and threatening, loopable
-```
-
-**boss3.mp3 — "O Falso Anjo"**
-```
-16-bit SNES final boss music, epic JRPG, chiptune instrumentation, 150 bpm, latin choir chant, cathedral organ, heroic brass counter melody, relentless drums, divine and corrupted, climactic, loopable
+16-bit SNES orchestral boss battle, retro JRPG, 160 bpm, epic seraph battle, heroic brass fanfare, full angelic choir, rapid harp and strings, timpani rolls, celestial bells, cymbal crashes, triumphant yet threatening, loopable
 ```
 
-**boss3_final.mp3 — "Desespero"**
+**boss3.mp3 — "O Falso Anjo"** (Mundo 3: rock/metal sombrio)
 ```
-16-bit SNES final boss last phase, chiptune instrumentation, 170 bpm, frantic and chaotic, distorted organ, screaming synth lead, double time drums, dissonant choir, apocalyptic, desperate, loopable
-```
-
-**reward.mp3 — "Santuário"**
-```
-16-bit SNES soundtrack, retro JRPG, chiptune instrumentation, peaceful sanctuary theme, 70 bpm, music box, soft harp, warm pads, gentle bells, safe and reflective, loopable
+16-bit retro symphonic metal, SNES soundfont, epic final boss battle, 150 bpm, minor key, heavy distorted guitar riffs, shredding guitar lead, double bass drums, cathedral pipe organ, latin angelic choir chant, orchestral brass hits, dark and climactic, divine yet corrupted, loopable
 ```
 
-**ending.mp3 — "O Trono é Teu"**
+**boss3_final.mp3 — "Desespero" (fase final)** (Mundo 3: rock/metal sombrio)
 ```
-16-bit SNES ending credits theme, retro JRPG, chiptune instrumentation, 85 bpm, triumphant yet emotional, full synth orchestra, choir swell, main theme reprise, bittersweet, heroic finale
+16-bit retro extreme symphonic metal, SNES soundfont, final boss last phase, 175 bpm, frantic and apocalyptic, tremolo picked distorted guitars, blast beat drums, fast guitar solo, distorted pipe organ, screaming dark choir, chaotic strings, tolling bells, desperate, loopable
 ```
+
+---
+
+## Opcionais
+
+**map.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG world map theme, 95 bpm, hopeful ascension, pizzicato strings, harp, gentle brass melody, angelic synth choir, soft march snare, loopable`
+
+**story.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG story cue, 70 bpm, solemn and sorrowful, music box, harp, low strings, distant angelic choir, cathedral reverb, loopable`
+
+**reward.mp3** — `16-bit SNES orchestral soundtrack, retro JRPG sanctuary theme, 70 bpm, peaceful and holy, harp, music box, warm angelic choir pads, gentle bells, loopable`
+
+**ending.mp3** — `16-bit SNES orchestral ending credits, retro JRPG, 85 bpm, triumphant and emotional, full orchestra, angelic choir swell, main theme reprise, harp, bells, bittersweet heroic finale`
 
 ## Efeitos sonoros
 

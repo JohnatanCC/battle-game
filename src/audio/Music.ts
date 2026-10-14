@@ -1,5 +1,5 @@
 // Gerenciador de música. Cada faixa procura primeiro o arquivo definitivo (feito no Suno)
-// em public/music/<id>.mp3; se não existir, toca o placeholder.
+// em public/music/<id>.mp3; faixas opcionais que faltarem usam a mais próxima (ex.: mapa usa o menu).
 
 export type TrackId =
   | 'menu' | 'story' | 'map'
@@ -8,18 +8,18 @@ export type TrackId =
   | 'reward' | 'ending';
 
 const FALLBACK: Record<TrackId, string> = {
-  menu: 'music/placeholder_menu.ogg',
-  story: 'music/placeholder_menu.ogg',
-  map: 'music/placeholder_menu.ogg',
-  reward: 'music/placeholder_menu.ogg',
-  ending: 'music/placeholder_menu.ogg',
-  world1: 'music/placeholder_world.mp3',
-  world2: 'music/placeholder_world.mp3',
-  world3: 'music/placeholder_world.mp3',
-  boss1: 'music/placeholder_boss.mp3',
-  boss2: 'music/placeholder_boss.mp3',
-  boss3: 'music/placeholder_boss.mp3',
-  boss3_final: 'music/placeholder_boss.mp3',
+  menu: 'music/menu.mp3',
+  story: 'music/menu.mp3',
+  map: 'music/menu.mp3',
+  reward: 'music/menu.mp3',
+  ending: 'music/menu.mp3',
+  world1: 'music/world1.mp3',
+  world2: 'music/world1.mp3',
+  world3: 'music/world1.mp3',
+  boss1: 'music/boss1.mp3',
+  boss2: 'music/boss1.mp3',
+  boss3: 'music/boss1.mp3',
+  boss3_final: 'music/boss1.mp3',
 };
 
 class MusicPlayer {
